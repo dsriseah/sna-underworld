@@ -1,0 +1,62 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    // configure glob patterns for excluding files and folders.
+    "files.exclude": {
+      "**/.git": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/package-lock.json": true
+    },
+    // highlight sri-style ursys module comment separators
+    "highlight.regexes": {
+      "(/// [^/]+? ///+)\n": [
+        {
+          "color": "#a3bdff",
+          "backgroundColor": "#2E4AE06f"
+        }
+      ]
+    },
+    "workbench.colorCustomizations": {
+      // make errors more obvious, de-emphasize warnings
+      "editorError.border": "#ff0000",
+      // color customizations for the title bar
+      "titleBar.activeBackground": "#5c2020",
+      "titleBar.inactiveBackground": "#5c202060",
+      "titleBar.inactiveForeground": "#ffffff40",
+      "tab.activeBackground": "#333"
+    },
+    // other theme overrides
+    "editor.tokenColorCustomizations": {},
+    // langauge specific overrides
+    "[javascript]": {
+      "editor.renderWhitespace": "all",
+      "editor.detectIndentation": true,
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2
+    },
+    "[javascriptreact]": {
+      "editor.renderWhitespace": "all",
+      "editor.detectIndentation": true,
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2
+    },
+    "[typescript]": {
+      "editor.renderWhitespace": "all",
+      "editor.detectIndentation": true,
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2
+    },
+    "[typescriptreact]": {
+      "editor.renderWhitespace": "all",
+      "editor.detectIndentation": true,
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2
+    }
+  }
+}

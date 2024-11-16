@@ -1,0 +1,15 @@
+{
+  "name": "sna-underworld",
+  "version": "1.0.0",
+  "description": "New JAMshire 2024 Game Jam Submission",
+  "scripts": {
+    "core": "ts-node-esm --transpile-only ../_ur/npm-scripts/@build-core.mts",
+    "dev": "npm run core && ts-node-esm  --transpile-only ./@build-underworld.mts",
+    "zip:public": "zip -r sna-underworld.zip _public/*"
+  },
+  "author": "dsriseah",
+  "license": "MIT",
+  "dependencies": {
+    "@ursys/core": "file:../_ur"
+  }
+}
