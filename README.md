@@ -18,8 +18,8 @@ git clone https://github.com/dsriseah/ursys.git
 npm ci
 
 cd ursys
-git clone https://github.com/dsriseah/jamshire-underworld.git sna-jamshire
-cd sna-jamshire
+git clone https://github.com/dsriseah/jamshire-underworld.git sna-underworld
+cd sna-underworld
 npm ci
 npm run dev
 ```
