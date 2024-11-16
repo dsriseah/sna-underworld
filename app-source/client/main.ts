@@ -6,6 +6,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
+import RENDERER from './module/renderer.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -25,6 +26,7 @@ const LOG = console.log.bind(this);
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SNA_PreHook() {
+  SNA.Hook('DOM_READY', () => LOG(...PR('DOM_READY')));
   SNA.Hook('LOAD_DATA', () => LOG(...PR('LOAD_DATA')));
   SNA.Hook('LOAD_CONFIG', () => LOG(...PR('LOAD_CONFIG')));
   SNA.Hook('LOAD_ASSETS', () => LOG(...PR('LOAD_ASSETS')));
