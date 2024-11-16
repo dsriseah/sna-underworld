@@ -22,3 +22,26 @@ tt {
 hr {
   margin: 2em 0;
 }
+
+/** GAME AREA **/
+
+/* Parent container styles */
+#container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+}
+
+#main {
+  background-color: lightblue;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+/* HUD div styles */
+#hud {
+  background-color: lightgray;
+  width: 100%;
+}

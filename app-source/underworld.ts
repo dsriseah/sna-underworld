@@ -30,8 +30,8 @@ SNA.Hook('LOAD_CONFIG', () => {});
 (async () => {
   LOG(...PR('Initializing UNDERGROUND App'));
 
-  // Set the global configuration object
-  SNA.GlobalConfig({ no_hmr: true, no_urnet: true });
+  // TODO: set to true for deployment to itch.io
+  SNA.GlobalConfig({ no_hmr: false, no_urnet: false });
 
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.

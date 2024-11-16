@@ -5,6 +5,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import PATH from 'node:path';
+// @ts-ignore missing type definition from esbuild
 import { SNA, PR } from '@ursys/core';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
