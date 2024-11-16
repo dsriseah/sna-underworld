@@ -10,8 +10,8 @@
   
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-// @ts-ignore missing type definition from esbuild
 import { SNA, ConsoleStyler } from '@ursys/core';
+import MAIN from './client/main.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,6 +32,7 @@ SNA.Hook('LOAD_CONFIG', () => {});
 
   // TODO: set to true for deployment to itch.io
   SNA.GlobalConfig({ no_hmr: false, no_urnet: false });
+  SNA.RegisterComponent(MAIN);
 
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.

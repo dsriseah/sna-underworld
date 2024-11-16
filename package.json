@@ -10,6 +10,8 @@
   "author": "dsriseah",
   "license": "MIT",
   "dependencies": {
-    "@ursys/core": "file:../_ur"
+    "@types/three": "^0.170.0",
+    "@ursys/core": "file:../_ur",
+    "three": "^0.170.0"
   }
 }
