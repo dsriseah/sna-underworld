@@ -13,7 +13,7 @@ import { SNA, ConsoleStyler, CLASS } from '@ursys/core';
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const LOG = console.log.bind(this);
-const PR = ConsoleStyler('gameloop', 'TagPurple');
+const PR = ConsoleStyler('RUN CTRL', 'TagCyan');
 const DBG = true;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let GAME_TIMER: number; // game loop timer handle

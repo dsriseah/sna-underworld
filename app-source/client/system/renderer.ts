@@ -17,7 +17,7 @@ import { HookGamePhase } from '../game-state.ts';
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const DBG = true;
 const LOG = console.log.bind(this);
-const PR = ConsoleStyler('renderer', 'TagPink');
+const PR = ConsoleStyler('render', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const RSTATE = {
   renderer: null,

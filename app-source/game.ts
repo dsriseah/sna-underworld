@@ -19,7 +19,7 @@ import GameLauncher from './client/game-launcher.ts';
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const LOG = console.log.bind(this);
-const PR = ConsoleStyler('game', 'TagGreen');
+const PR = ConsoleStyler('boot', 'TagGray');
 
 /// LIFECYCLE HOOKS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -30,8 +30,9 @@ SNA.Hook('LOAD_CONFIG', () => {});
 (async () => {
   LOG(...PR('Initializing UNDERGROUND App'));
 
-  // TODO: set to true for deployment to itch.io
-  SNA.GlobalConfig({ no_hmr: false, no_urnet: false });
+  // set to true for deployment to itch.io
+  // SNA.GlobalConfig({ no_urnet: true, no_hmr: true });
+  SNA.GlobalConfig({});
 
   // register all components before SNA.Start() is called
   SNA.RegisterComponent(GameLauncher);

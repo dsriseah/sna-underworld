@@ -16,7 +16,7 @@ import type { DataObj } from 'tsconfig/types';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const PR = ConsoleStyler('main', 'TagSystem');
+const PR = ConsoleStyler('game.cfg', 'TagGray');
 const LOG = console.log.bind(this);
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////
