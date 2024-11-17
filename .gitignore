@@ -11,6 +11,9 @@ _runtime
 # SNA web bundler dynamic importer
 __app_imports.ts
 
+# don't commit external binary asset directories
+*_datapack
+
 # don't commit _nocommit files or directories
 *_nocommit*
 
