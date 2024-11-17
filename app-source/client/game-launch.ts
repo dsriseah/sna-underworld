@@ -7,7 +7,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 // SNA system modules
-import MOD_RENDER from './system/renderer.ts';
+import MOD_RENDER from './engine/renderer.ts';
 import * as GAME_RUN from './game-run.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
