@@ -11,7 +11,8 @@
     },
     "search.exclude": {
       "**/node_modules": true,
-      "**/package-lock.json": true
+      "**/package-lock.json": true,
+      "**/_public": true
     },
     // highlight sri-style ursys module comment separators
     "highlight.regexes": {
