@@ -60,9 +60,9 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-run.ts';
-import { SNA_Sprite } from './sprite.ts';
-import { GetTexture } from './assets-texture.ts';
-import { StarField } from './visual/starfield.ts';
+import { SNA_Sprite } from './class-sprite.ts';
+import { GetTexture } from './texture-mgr.ts';
+import { StarField } from './visual/class-starfield.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
