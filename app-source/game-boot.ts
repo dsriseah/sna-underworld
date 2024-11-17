@@ -11,7 +11,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-import GameLauncher from './client/game-launcher.ts';
+import MOD_Launcher from './client/game-launch.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35,7 +35,7 @@ SNA.Hook('LOAD_CONFIG', () => {});
   SNA.GlobalConfig({});
 
   // register all components before SNA.Start() is called
-  SNA.RegisterComponent(GameLauncher);
+  SNA.RegisterComponent(MOD_Launcher);
 
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.
