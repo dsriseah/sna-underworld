@@ -30,9 +30,23 @@ SNA.Hook('LOAD_CONFIG', () => {});
 (async () => {
   LOG(...PR('Initializing UNDERGROUND App'));
 
-  // set to true for deployment to itch.io
-  // SNA.GlobalConfig({ no_urnet: true, no_hmr: true });
-  SNA.GlobalConfig({});
+  const isSecure = location.protocol === 'https:';
+  const noPortSpec = location.port === '';
+
+  const cssPro =
+    'color: #008000;padding:4px 8px;' +
+    'background-color:#00800020;font-weight:bold;';
+  const cssDev =
+    'color: #ff0000;padding:4px 8px;' +
+    'background-color:#ff000020;font-weight:bold;';
+
+  if (isSecure && noPortSpec) {
+    LOG('%cRunning in Production Mode', cssPro);
+    SNA.GlobalConfig({ no_urnet: true, no_hmr: true });
+  } else {
+    LOG('%cRunning in Development Mode', cssDev);
+    SNA.GlobalConfig({});
+  }
 
   // register all components before SNA.Start() is called
   SNA.RegisterComponent(MOD_Launcher);
