@@ -11,7 +11,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-import MAIN from './client/main.ts';
+import GameLauncher from './client/game-launcher.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -19,7 +19,7 @@ import MAIN from './client/main.ts';
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const LOG = console.log.bind(this);
-const PR = ConsoleStyler('app', 'TagGreen');
+const PR = ConsoleStyler('game', 'TagGreen');
 
 /// LIFECYCLE HOOKS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,7 +32,9 @@ SNA.Hook('LOAD_CONFIG', () => {});
 
   // TODO: set to true for deployment to itch.io
   SNA.GlobalConfig({ no_hmr: false, no_urnet: false });
-  SNA.RegisterComponent(MAIN);
+
+  // register all components before SNA.Start() is called
+  SNA.RegisterComponent(GameLauncher);
 
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.

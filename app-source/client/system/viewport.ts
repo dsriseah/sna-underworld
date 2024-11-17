@@ -324,19 +324,5 @@ class Viewport {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const instance = new Viewport();
-export default instance;
+export default new Viewport();
 export { Viewport };
-
-/*/
-IGNORED OBJECTS
-
-SYS1401
-
-  CONTAINER
-  OVERLAY
-  WEBGL
-
-  sizeElement(element, w, h) - resize an html element
-  glSize(w,h) - size webgl to width, height
-/*/
