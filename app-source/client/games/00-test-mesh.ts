@@ -23,6 +23,7 @@ const VISUALS: { [key: string]: THREE.Mesh } = {};
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
+  // dummy test code
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   const cube = new THREE.Mesh(geometry, material);
@@ -40,12 +41,7 @@ function Update() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('game', {
   PreHook: () => {
-    HookGamePhase('CONSTRUCT', async () => {
-      LOG(...PR('CONSTRUCT'));
-      SetupScene();
-    });
-    HookGamePhase('UPDATE', () => {
-      Update();
-    });
+    HookGamePhase('CONSTRUCT', SetupScene);
+    HookGamePhase('UPDATE', Update);
   }
 });

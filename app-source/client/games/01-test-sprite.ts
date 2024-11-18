@@ -58,12 +58,7 @@ function Update() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('game', {
   PreHook: () => {
-    HookGamePhase('CONSTRUCT', async () => {
-      LOG(...PR('CONSTRUCT'));
-      SetupScene();
-    });
-    HookGamePhase('UPDATE', () => {
-      Update();
-    });
+    HookGamePhase('CONSTRUCT', SetupScene);
+    HookGamePhase('UPDATE', Update);
   }
 });

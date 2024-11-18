@@ -18,7 +18,7 @@ const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('game', 'TagOrange');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const VISUALS: { [key: string]: THREE.Object3D } = {};
+const VISUALS: { [key: string]: any } = {};
 
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,28 +34,32 @@ function SetupScene() {
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
   const material = new THREE.PointsMaterial({ color: 0x888888 });
   const points = new THREE.Points(geometry, material);
-  points.material.size = 3;
+  points.material.size = 5;
   VISUALS.points = points;
   Renderer.RP_AddVisual('world', points);
+
+  const defaultMap = new THREE.TextureLoader().load(
+    '_datapack/underworld/sprites/default.png'
+  );
+  const defaultMat = new THREE.SpriteMaterial({ map: defaultMap });
+  const defaultSprite = new THREE.Sprite(defaultMat);
+  VISUALS.sprite = defaultSprite;
+  Renderer.RP_AddVisual('world', defaultSprite);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
-  const { points } = VISUALS;
+  const { points, sprite } = VISUALS;
   points.rotation.x += 0.001;
   points.rotation.y += 0.001;
   points.rotation.z += 0.001;
+  sprite.material.rotation -= 0.01;
 }
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('game', {
   PreHook: () => {
-    HookGamePhase('CONSTRUCT', async () => {
-      LOG(...PR('CONSTRUCT'));
-      SetupScene();
-    });
-    HookGamePhase('UPDATE', () => {
-      Update();
-    });
+    HookGamePhase('CONSTRUCT', SetupScene);
+    HookGamePhase('UPDATE', Update);
   }
 });

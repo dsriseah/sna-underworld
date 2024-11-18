@@ -16,8 +16,9 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as MCP from './game-mcp.ts';
 import MOD_RENDER from './engine/renderer.ts';
-// import GAME from './games/00-test-cube.ts';
-import GAME from './games/01-test-sprite.ts';
+// import GAME from './games/00-test-mesh.ts';
+// import GAME from './games/01-test-sprite.ts';
+import GAME from './games/02-test-points.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
