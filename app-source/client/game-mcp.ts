@@ -1,7 +1,16 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  top-level game loop module and state
-  can be imported by other modules in the 'system' directory
+  MASTER CONTROL PROGRAM (MCP) - This is the game loop controller that can be
+  accessed by any module to perform game-related state and control tasks. It
+  implements the game's critical loops using PhaseMachine.
+
+  Any SNA game component can hook into this system through the provided
+  HookGamePhase() method to add their own logic to the game loop. The game
+  component must implement the SNA_Module interface to be added to the app's
+  construction chain.
+
+  See render.ts for an example of how to hook into the game loop phases, and
+  also game-launch.ts for how to add modules to the game.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -27,7 +36,7 @@ const STATE = {
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { PhaseMachine } = CLASS;
-const PM = new PhaseMachine('UWORLD', {
+const PM = new PhaseMachine('SNA_GAME', {
   INIT: [],
   LOOP_BEGIN: [
     'CHECKS', // game checks
@@ -73,14 +82,14 @@ async function Init() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async function Start() {
   // first run the INIT phase group
-  await RunPhaseGroup('UWORLD/INIT');
+  await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
   GAME_TIMER = setInterval(async () => {
     if (m_UpdateTimers().frameRate > 0) {
-      await RunPhaseGroup('UWORLD/LOOP_BEGIN');
-      await RunPhaseGroup('UWORLD/LOOP_CALC');
-      await RunPhaseGroup('UWORLD/LOOP_THINK');
-      await RunPhaseGroup('UWORLD/LOOP_RENDER');
+      await RunPhaseGroup('SNA_GAME/LOOP_BEGIN');
+      await RunPhaseGroup('SNA_GAME/LOOP_CALC');
+      await RunPhaseGroup('SNA_GAME/LOOP_THINK');
+      await RunPhaseGroup('SNA_GAME/LOOP_RENDER');
     }
   }, FRAME_DUR_MS);
   LOG(...PR('Started Game Loop'));
@@ -89,7 +98,7 @@ async function Start() {
 async function Stop() {
   clearInterval(GAME_TIMER);
   STATE.frameRate = 0;
-  await RunPhaseGroup('UWORLD/END');
+  await RunPhaseGroup('SNA_GAME/END');
   LOG(...PR('Stopped Game Loop'));
 }
 
@@ -97,7 +106,7 @@ async function Stop() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook into game loop phases */
 function HookGamePhase(phase: string, fn: Function) {
-  HookPhase(`UWORLD/${phase}`, fn);
+  HookPhase(`SNA_GAME/${phase}`, fn);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Get current game loop state */

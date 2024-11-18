@@ -1,11 +1,19 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  Piece Class
+  Piece - This class implements the features that a game piece should have
+  such as position, direction, rotation. These parameters are independent
+  of the visual representation of the piece, which is handled by the
+  piece.visual property and assigned by the game initialization code.
+
+  See AbstractPiece for the abstract class that implements attributes that are
+  not "physical" concepts.
+
+  See MovingPiece for the class that implements the physics and movement.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
-import BasePiece from './abstract-base-piece.ts';
+import AbstractPiece from './class-abstract-piece.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -18,7 +26,7 @@ type PhysicsBody = any; // todo: physics engine
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class Piece extends BasePiece {
+class Piece extends AbstractPiece {
   //
   cur_pos: THREE.Vector3; // position x,y,z
   cur_rot: THREE.Vector3; // rot x,y,z

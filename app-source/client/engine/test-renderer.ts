@@ -1,7 +1,6 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  URSYS Bare Module Template
-  - for detailed example, use snippet 'ur-module-example' instead
+  TEST RENDERER - superceded by renderer.ts.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -80,7 +79,7 @@ function Render() {
 export default SNA.DeclareModule('renderer', {
   PreHook: () => {
     HookGamePhase('INIT', () => {
-      LOG(...PR('Hooked into UWORLD/INIT'));
+      LOG(...PR('Hooked into SNA_GAME/INIT'));
       Init();
       SetupScene();
     });

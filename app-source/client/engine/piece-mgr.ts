@@ -1,6 +1,8 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  PIECE MANAGER
+  PIECEFACTORY - Manages the collection of all game pieces created by the
+  various Piece classes. It's used to perform game lifecyle operations on
+  entire collections of pieces.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 

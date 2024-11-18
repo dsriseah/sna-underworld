@@ -1,59 +1,7 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  VISUALFACTORY
-
-  HOOK: 'LOAD_ASSETS'
-  .. uses three.ImageUtils.loadTexture
-  .. set DEFAULT_SPR_TEXTURE path
-
-  MakeDefaultSprite() : InqSprite
-  .. uses three.SpriteMaterial class
-  .. returns InqSprite instance
-
-  MakeStaticSprite( textPath, callback ) : InqSprite
-  .. uses three.ImageUtils.loadTexture
-  .. returns InqSprite instance
-
-  MakeGroundPlane({ width, depth, color }) : three.Mesh
-  .. uses three.PlaneGeometry class
-  .. uses three.MeshBasicMaterial class
-  .. uses three.Mesh class
-  .. returns three.Mesh instance
-
-  MakeSphere({ radius, segmentsW, segmentsH }) : three.Mesh
-  .. uses three.MeshPhongMaterial class
-  .. uses three.SphereGeometry class
-  .. uses three.Mesh class
-  .. returns three.Mesh instance
-
-  MakeTextSprite( text, parameters ) : three.Sprite
-  .. skip for now
-
-  MakeRectangle({ width, height, color }) : three.Mesh
-  .. uses three.PlaneGeometry class
-  .. uses three.MeshBasicMaterial class
-  .. uses three.Mesh class
-  .. adds SetPositionByTL, etc positioning methods
-  .. returns three.Mesh instance
-
-  MakeCircle({ radius, segments, color }) : three.Mesh
-  .. uses three.MeshBasicMaterial class
-  .. uses three.CircleGeometry class
-  .. uses three.Mesh class
-  .. returns three.Mesh instance
-
-  MakeAreaCircle({ radius, segments, color, opacity }) : three.Mesh
-  .. uses MakeCircle method
-  .. adds opacity and blending to material 
-
-  MakeLine({ color, lineWidth }) : three.Line
-  .. uses three.Geometry class
-  .. uses three.LineBasicMaterial class
-  .. pushes coordinates into the geo.vertices
-  .. returns three.Line instance
-
-  MakeStarField({ color, parallax }) : StarField
-  .. uses custom StarField 
+  VisualManager - This provides various methods for creating visual elements
+  such as sprites, meshes, and lines. 
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 

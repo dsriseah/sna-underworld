@@ -1,8 +1,8 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  SNA_Sprite adds some utility methods to the base THREE.Sprite class
-
-  TODO: add back the sequence and fx code
+  SNA_Sprite - This class extends THREE.Sprite to provide additional methods
+  for managing textures, scaling, and visibility. It also provides sequence
+  and spritesheet-based texture setup.
   
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 

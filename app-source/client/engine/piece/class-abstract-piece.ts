@@ -1,7 +1,11 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  Base Piece Class - Implements meta properties that may affect how a piece
-  interacts with the game world.
+  AbstractPiece - this class implements the meta properties of a game piece
+  that do not have physical representation. It's the base class for all 
+  other piece classes.
+
+  It also implements the THINKING interface which all pieces have to
+  implement.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -32,7 +36,7 @@ function NewID(prefix?: string): UR_EntID {
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-abstract class BasePiece implements I_PieceThink {
+abstract class AbstractPiece implements I_PieceThink {
   //
   _id: UR_EntID;
   name: string;
@@ -90,6 +94,8 @@ abstract class BasePiece implements I_PieceThink {
    *  queuing decision-making flags, but no outside effects */
   abstract think(stepMS: number): void;
 
+  /** called during OVERTHINK phase. put code for group AI
+   *  decision overrides based on what happened after think*/
   abstract overthink(stepMS: number): void;
 
   /** called during EXECUTE phase. put code for external
@@ -99,6 +105,6 @@ abstract class BasePiece implements I_PieceThink {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default BasePiece;
-export { BasePiece };
+export default AbstractPiece;
+export { AbstractPiece };
 export type { RoleTypes };

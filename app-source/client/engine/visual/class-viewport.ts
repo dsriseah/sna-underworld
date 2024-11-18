@@ -1,8 +1,11 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  VIEWPORT is our "fixed-size pixel space", which matches the resolution of the
-  WebGLRenderer. This resolution is also the base resolution for bitmapped
-  images used as backgrounds and sprites. 
+  Viewport - This class manages a ThreeJS WebGLRenderer and the cameras that
+  render the game world at a particular size in the HTML web app. It provides a
+  world camera and a screen camera for rendering 3D and 2D scenes which are used
+  by the RENDERER module to draw its renderpasses comprised of various
+  THREE.Scene objects. It also provides utilities sizing the WebGL canvas to
+  the container element, and capturing the screen as a base64 encoded image.
 
   \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 

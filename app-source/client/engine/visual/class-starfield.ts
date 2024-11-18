@@ -1,6 +1,9 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  Starfield Visual Class
+  Starfield - This class extends THREE.Points to create a starfield effect
+  that can be used as a background for a 3D scene. The starfield has a parallax
+  effect that can be adjusted to simulate depth when multiple Starfield
+  visuals are used.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
