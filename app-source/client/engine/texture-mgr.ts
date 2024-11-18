@@ -1,6 +1,7 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  TEXTURE ASSETS
+  TextureManager manages loaded texture assets in a dictionary. It's used
+  by VisualFactory to load and retrieve textures for sprites.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 

@@ -1,11 +1,10 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-	VIEWPORT is our "fixed-size pixel space", which matches the
-	resolution of the WebGLRenderer. This resolution is also the
-	base resolution for bitmapped images used as backgrounds and
-	sprites. 
+  VIEWPORT is our "fixed-size pixel space", which matches the resolution of the
+  WebGLRenderer. This resolution is also the base resolution for bitmapped
+  images used as backgrounds and sprites. 
 
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
+  \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
 
@@ -117,9 +116,9 @@ class Viewport {
   }
 
   /** Step 3. Create all the cameras */
-  InitializeCameras(): void {
+  initializeCameras(): void {
     if (!this.worldScale) {
-      console.error('Call InitializeWorld() before calling InitializeCameras()');
+      console.error('Call InitializeWorld() before calling initializeCameras()');
       return;
     }
     let hw = this.width / 2;
@@ -160,6 +159,8 @@ class Viewport {
     this.camWORLD = this.cam2D;
   }
 
+  /// VIEWPORT SIZE METHOD in SCREEN COORDINATES ///
+
   /** for updating when browser size changes (see SCREEN module) */
   setDimensions(width: number, height: number): void {
     if (!this.threeGL) {
@@ -173,10 +174,8 @@ class Viewport {
         'ViewPort requires valid width and height. Did you InitializeRenderer()?'
       );
     }
-
     this.aspect = this.width / this.height;
     this.worldAspect = this.aspect;
-
     // save values
     this.width = width;
     this.height = height;
@@ -192,6 +191,7 @@ class Viewport {
     canvas.style.height = this.height + 'px';
   }
 
+  /** return the current dimensions of the viewport */
   dimensions(): any {
     if (!this.threeGL) {
       console.error('WebGL is not initialized');
@@ -206,31 +206,7 @@ class Viewport {
     };
   }
 
-  worldDimensions(): any {
-    return {
-      worldUnits: this.worldUnits,
-      worldScale: this.worldScale,
-      worldAspect: this.worldAspect
-    };
-  }
-
-  updateWorldCameras(): void {
-    let whw = (this.width * this.worldScale) / 2;
-    let whh = (this.height * this.worldScale) / 2;
-    let wox = this.worldOrigin.x;
-    let woy = this.worldOrigin.y;
-    // update world2d camera
-    this.cam2D.left = -whw + wox;
-    this.cam2D.right = +whw + wox;
-    this.cam2D.top = +whh + woy;
-    this.cam2D.bottom = -whh + woy;
-    // update aspect
-    this.cam3D.aspect = this.aspect;
-    // update project matrices
-    this.cam2D.updateProjectionMatrix();
-    this.cam3D.updateProjectionMatrix();
-  }
-
+  /** update the viewport cameras that use screen coordinates */
   updateViewportCameras(): void {
     let hw = this.width / 2;
     let hh = this.height / 2;
@@ -248,6 +224,39 @@ class Viewport {
     this.camSCREEN.updateProjectionMatrix();
   }
 
+  /// WORLD CAMERAS in WORLD COORDINATES ///
+
+  /** return the current world dimensions */
+  worldDimensions(): any {
+    return {
+      worldUnits: this.worldUnits,
+      worldScale: this.worldScale,
+      worldAspect: this.worldAspect
+    };
+  }
+
+  /** recalculate the world cameras */
+  updateWorldCameras(): void {
+    let whw = (this.width * this.worldScale) / 2;
+    let whh = (this.height * this.worldScale) / 2;
+    let wox = this.worldOrigin.x;
+    let woy = this.worldOrigin.y;
+    // update world2d camera
+    this.cam2D.left = -whw + wox;
+    this.cam2D.right = +whw + wox;
+    this.cam2D.top = +whh + woy;
+    this.cam2D.bottom = -whh + woy;
+    // update aspect
+    this.cam3D.aspect = this.aspect;
+    // update project matrices
+    this.cam2D.updateProjectionMatrix();
+    this.cam3D.updateProjectionMatrix();
+  }
+
+  /// WORLD CAMERA UTILITIES ///
+
+  /** set the world origin for the world cameras so the
+   *  entire world is visible */
   frameToWorld(): void {
     let whw = (this.width * this.worldScale) / 2;
     let whh = (this.height * this.worldScale) / 2;
@@ -259,57 +268,7 @@ class Viewport {
     this.cam2D.position.z = d;
   }
 
-  aspectRatio(): number {
-    return this.aspect;
-  }
-
-  backgroundCam(): THREE.OrthographicCamera {
-    return this.camBG;
-  }
-
-  worldCam(): THREE.Camera {
-    return this.camWORLD;
-  }
-
-  worldCam2D(): THREE.OrthographicCamera {
-    return this.cam2D;
-  }
-
-  worldCam3D(): THREE.PerspectiveCamera {
-    return this.cam3D;
-  }
-
-  screenCam(): THREE.OrthographicCamera {
-    return this.camSCREEN;
-  }
-
-  webGL(): THREE.WebGLRenderer {
-    return this.threeGL;
-  }
-  webGLCanvas(): HTMLElement {
-    return this.threeGL.domElement;
-  }
-
-  clear(): void {
-    this.threeGL.clear();
-  }
-
-  clearDepth(): void {
-    this.threeGL.clearDepth();
-  }
-
-  render(rpass: any): void {
-    this.threeGL.render(rpass, rpass.camera);
-  }
-
-  selectWorld2D(): void {
-    this.camWORLD = this.cam2D;
-  }
-
-  selectWorld3D(): void {
-    this.camWORLD = this.cam3D;
-  }
-
+  /** point the world cameras at a point in the world */
   track(vector3: THREE.Vector3): void {
     v.x = vector3.x;
     v.y = vector3.y;
@@ -320,9 +279,81 @@ class Viewport {
     this.cam3D.position.y = v.y;
     this.cam3D.lookAt(v);
   }
+
+  /// ACCESSOR METHODS ///
+
+  /** this viewport instance's aspect ratio */
+  aspectRatio(): number {
+    return this.aspect;
+  }
+
+  /** the background cam for rendering 2D texture scenes */
+  bgCam(): THREE.OrthographicCamera {
+    return this.camBG;
+  }
+
+  /** the current world camera for rendering the playfield scenes */
+  worldCam(): THREE.Camera {
+    return this.camWORLD;
+  }
+
+  /** cam2D is one of two world cameras, returned by worldCam() and
+   *  set through selectWorld2D() */
+  worldCam2D(): THREE.OrthographicCamera {
+    return this.cam2D;
+  }
+
+  /** cam3D is one of two world cameras, returned by worldCam() and
+   *  set through selectWorld3D() */
+  worldCam3D(): THREE.PerspectiveCamera {
+    return this.cam3D;
+  }
+
+  /** the screen camera for rendering 2D overlay scenes */
+  screenCam(): THREE.OrthographicCamera {
+    return this.camSCREEN;
+  }
+
+  /** return the WebGL renderer that can render() */
+  webGL(): THREE.WebGLRenderer {
+    return this.threeGL;
+  }
+
+  /** return the WebGL canvas element */
+  webGLCanvas(): HTMLElement {
+    return this.threeGL.domElement;
+  }
+
+  /// RENDERING CONTROL ///
+
+  /** set the 2D World Camera to be used by render() */
+  selectWorld2D(): void {
+    this.camWORLD = this.cam2D;
+  }
+
+  /** set the 3D World Camera to be used by render() */
+  selectWorld3D(): void {
+    this.camWORLD = this.cam3D;
+  }
+
+  /** render the WebGL scene using the currently set WorldCam */
+  render(rpass: THREE.Scene, camera?: THREE.Camera): void {
+    if (!camera) camera = this.camWORLD;
+    this.threeGL.render(rpass, camera);
+  }
+
+  /** clear the WebGL render buffer */
+  clear(): void {
+    this.threeGL.clear();
+  }
+
+  /** clear the WebGL render depth buffer only */
+  clearDepth(): void {
+    this.threeGL.clearDepth();
+  }
 }
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default new Viewport();
+export default Viewport;
 export { Viewport };

@@ -1,15 +1,14 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  RENDERER draws the game world's 3D and 2D elements. There are multiple
-  "render passes" that draw different layers of the game. Uses the THREE
-  ViewPort class to manage a WebGL renderer and camera.
+  URSYS Bare Module Template
+  - for detailed example, use snippet 'ur-module-example' instead
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-run.ts';
-import Viewport from './visual/class-viewport.ts';
+// import VIEWPORT from './viewport.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
