@@ -16,7 +16,7 @@ import Viewport from './visual/class-viewport.ts';
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 type RP_Name = 'bg' | 'fx0' | 'world' | 'fx1' | 'over' | 'hud';
-type RP_Dictionary = { [key in RP_Name]: THREE.Scene };
+type RP_Dictionary = { [key in RP_Name]: { scene: THREE.Scene; cam: THREE.Camera } };
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -53,22 +53,22 @@ function m_CheckCaptureScreen() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** add a visual to a render pass */
 function RP_AddVisual(pass: RP_Name, visual: THREE.Object3D) {
-  RP_DICT[pass].add(visual);
+  RP_DICT[pass].scene.add(visual);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** remove a visual from a render pass */
 function RP_RemoveVisual(pass: RP_Name, visual: THREE.Object3D) {
-  RP_DICT[pass].remove(visual);
+  RP_DICT[pass].scene.remove(visual);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** set fog for a render pass */
 function RP_SetFog(pass: RP_Name, fog: THREE.Fog) {
-  RP_DICT[pass].fog = fog;
+  RP_DICT[pass].scene.fog = fog;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** get the THREE.Scene by name */
 function RP_GetScene(pass: RP_Name): THREE.Scene {
-  return RP_DICT[pass];
+  return RP_DICT[pass].scene;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async function RP_SetBackgroundImage(texPath: string) {
@@ -111,7 +111,7 @@ function GetClickedVisual(x: number, y: number): THREE.Object3D[] {
   mouse.x = (x / VIEWPORT.width) * 2 - 1;
   mouse.y = -(y / VIEWPORT.height) * 2 + 1;
   raycaster.setFromCamera(mouse, VIEWPORT.worldCam());
-  const scene = RP_DICT['world'];
+  const { scene } = RP_DICT['world'];
   const intersects = raycaster.intersectObjects(scene.children, true);
   return intersects.map(i => i.object);
 }
@@ -120,9 +120,15 @@ function GetClickedVisual(x: number, y: number): THREE.Object3D[] {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** called during GamePhase INIT */
 function Initialize() {
-  // initialize render pass dictionary
-  RP_DICT = {} as RP_Dictionary;
-  RP_NAMES.forEach(name => (RP_DICT[name] = new THREE.Scene()));
+  // initialize render pass dictionary, adding in order of rendering
+  RP_DICT = {
+    bg: { scene: new THREE.Scene(), cam: VIEWPORT.bgCam() },
+    fx0: { scene: new THREE.Scene(), cam: VIEWPORT.worldCam() },
+    world: { scene: new THREE.Scene(), cam: VIEWPORT.worldCam() },
+    fx1: { scene: new THREE.Scene(), cam: VIEWPORT.worldCam() },
+    over: { scene: new THREE.Scene(), cam: VIEWPORT.screenCam() },
+    hud: { scene: new THREE.Scene(), cam: VIEWPORT.screenCam() }
+  };
   // initialize viewport
   const main = document.getElementById('main-gl');
   const width = main.clientWidth;
@@ -138,10 +144,11 @@ function DrawWorld() {
   m_PreRender();
   // render all render passes in order of RP_NAMES
   VIEWPORT.clear();
-  for (let rp of RP_NAMES) {
-    VIEWPORT.render(RP_DICT[rp]);
+  Object.keys(RP_DICT).forEach(rp => {
+    const { scene, cam } = RP_DICT[rp];
+    VIEWPORT.render(scene, cam);
     VIEWPORT.clearDepth();
-  }
+  });
   // invoke post-render functions
   m_PostRender();
   // check for screen capture request

@@ -150,7 +150,7 @@ class Viewport {
     this.cam2D.position.z = d;
 
     // assign default world camera as 2D
-    this.camWORLD = this.cam2D;
+    this.camWORLD = this.cam3D;
   }
 
   /// VIEWPORT SIZE METHOD in SCREEN COORDINATES ///
