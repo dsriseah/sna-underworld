@@ -22,7 +22,7 @@ import { ConsoleStyler, CLASS } from '@ursys/core';
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const LOG = console.log.bind(this);
-const PR = ConsoleStyler('RUN CTRL', 'TagCyan');
+const PR = ConsoleStyler('MCP', 'TagCyan');
 const DBG = true;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let GAME_TIMER: number; // game loop timer handle
@@ -37,7 +37,12 @@ const STATE = {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { PhaseMachine } = CLASS;
 const PM = new PhaseMachine('SNA_GAME', {
-  INIT: [],
+  GAME_INIT: [
+    'INIT', // game initialization
+    'LOAD_ASSETS', // game asset loading
+    'CONSTRUCT', // game object construction
+    'START' // game start
+  ],
   LOOP_BEGIN: [
     'CHECKS', // game checks
     'REFEREE' // game referee decisions
@@ -76,11 +81,12 @@ function m_UpdateTimers() {
 
 /// CONTROL METHODS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-async function Init() {
-  LOG(...PR('Initialized Game Loop'));
-}
+/** used for data structure initialization */
+async function Init() {}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** API: Start the game loop */
 async function Start() {
+  LOG(...PR('Game Initializing'));
   // first run the INIT phase group
   await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
@@ -92,9 +98,10 @@ async function Start() {
       await RunPhaseGroup('SNA_GAME/LOOP_RENDER');
     }
   }, FRAME_DUR_MS);
-  LOG(...PR('Started Game Loop'));
+  LOG(...PR('Game Loop Started'));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** API: Stop the game loop */
 async function Stop() {
   clearInterval(GAME_TIMER);
   STATE.frameRate = 0;

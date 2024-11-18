@@ -152,9 +152,7 @@ function DrawWorld() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('renderer', {
   PreHook: () => {
-    LOG(...PR('Hooking into MCP Game Phases during SNA PreHook'));
     HookGamePhase('INIT', () => {
-      LOG(...PR('Hooked into SNA_GAME/INIT'));
       Initialize();
     });
     HookGamePhase('DRAW_WORLD', () => {

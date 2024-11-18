@@ -17,6 +17,7 @@ import { SNA, ConsoleStyler } from '@ursys/core';
 // SNA system modules
 // import MOD_RENDER from './engine/test-renderer.ts';
 import MOD_RENDER from './engine/renderer.ts';
+import GAME from './games/00-test-example.ts';
 import * as MCP from './game-mcp.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -25,23 +26,22 @@ import type { DataObj } from 'tsconfig/types';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const PR = ConsoleStyler('game.cfg', 'TagGray');
+const PR = ConsoleStyler('launch', 'TagGray');
 const LOG = console.log.bind(this);
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook for SNA to add modules to the game using the passed function */
 function SNA_AddModule({ f_AddModule }) {
-  LOG(...PR('Adding Modules'));
   // register all components before SNA.Start() is called
   f_AddModule(MOD_RENDER);
+  f_AddModule(GAME);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook for SNA to provide a configuration object that's passed on
  *  from game-boot that gets it from startup params. */
 function SNA_PreConfig(cfg: DataObj) {
   // cfg contains settings from the app config file
-  LOG(...PR('SNA_PreConfig'));
   const { data } = cfg;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,16 +50,13 @@ function SNA_PreConfig(cfg: DataObj) {
  *  WARNING: This is NOT the same as using the MCP HookGamePhase() method,
  *  which is for the GAME LIFECYCLE phases! */
 function SNA_PreHook() {
-  LOG(...PR('Configuring Game Master Control Program (MCP)'));
   //
   SNA.Hook('APP_CONFIG', async () => {
     await MCP.Init();
-    LOG(...PR('executed APP_CONFIG'));
   });
   //
   SNA.Hook('APP_RUN', async () => {
     await MCP.Start();
-    LOG(...PR('executed APP_RUN'));
   });
 }
 

@@ -52,15 +52,16 @@ async function LoadTexture(texPath: string): Promise<THREE.Texture> {
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Invoked by HookGamePhase  in SNA_Module declaration */
-async function INIT_LoadTextures() {
+async function LoadTextures() {
   const tex = await LoadTexture(DEFAULT_PNG);
+  LOG('loaded default texture:', tex);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('textures', {
   PreHook: () => {
-    HookGamePhase('INIT', async () => {
+    HookGamePhase('LOAD_ASSETS', async () => {
       LOG(...PR('loading default texture(s)'));
-      await INIT_LoadTextures();
+      await LoadTextures();
     });
   }
 });
