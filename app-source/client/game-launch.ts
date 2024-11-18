@@ -14,11 +14,10 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-// SNA system modules
-// import MOD_RENDER from './engine/test-renderer.ts';
-import MOD_RENDER from './engine/renderer.ts';
-import GAME from './games/00-test-example.ts';
 import * as MCP from './game-mcp.ts';
+import MOD_RENDER from './engine/renderer.ts';
+// import GAME from './games/00-test-cube.ts';
+import GAME from './games/01-test-sprite.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

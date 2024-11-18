@@ -1,6 +1,6 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  00-STARFIELD GAME - this is a game that that just draws a starfield.
+  00 TEST MESH - test basic mesh rendering
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -18,9 +18,7 @@ const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('game', 'TagOrange');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const VISUALS = {
-  cube: null
-};
+const VISUALS: { [key: string]: THREE.Mesh } = {};
 
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
