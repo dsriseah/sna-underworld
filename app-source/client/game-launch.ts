@@ -7,8 +7,9 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 // SNA system modules
-import MOD_RENDER from './engine/test-renderer.ts';
-import * as GAME_RUN from './game-run.ts';
+// import MOD_RENDER from './engine/test-renderer.ts';
+import MOD_RENDER from './engine/renderer.ts';
+import * as MCP from './game-mcp.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -46,11 +47,11 @@ function SNA_PreHook() {
   // SNA.Hook('APP_RUN', () => LOG(...PR('APP_RUN')));
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   SNA.Hook('APP_CONFIG', async () => {
-    await GAME_RUN.Init();
+    await MCP.Init();
     LOG(...PR('executed APP_CONFIG'));
   });
   SNA.Hook('APP_RUN', async () => {
-    await GAME_RUN.Start();
+    await MCP.Start();
     LOG(...PR('executed APP_RUN'));
   });
 }

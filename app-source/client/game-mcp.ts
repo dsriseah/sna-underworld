@@ -104,6 +104,18 @@ function HookGamePhase(phase: string, fn: Function) {
 function GetState() {
   return STATE;
 }
+function GameTimeMS() {
+  return STATE.timeMS;
+}
+function RealFrameIntervalMS() {
+  return STATE.elapsedMS;
+}
+function FrameIntervalMS() {
+  return FRAME_DUR_MS;
+}
+function FrameRate() {
+  return STATE.frameRate;
+}
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -113,5 +125,10 @@ export {
   Stop, // stop the game loop
   //
   HookGamePhase, // (phase,fn)=>void
-  GetState // get current game loop state
+  GetState, // get current game loop state
+  //
+  GameTimeMS, // current increasing gametime in milliseconds
+  FrameIntervalMS, // frame duration in milliseconds based on set frame rate
+  RealFrameIntervalMS, // actual frame duration in milliseconds
+  FrameRate // current frame rate
 };

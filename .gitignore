@@ -16,6 +16,7 @@ __app_imports.ts
 
 # don't commit _nocommit files or directories
 *_nocommit*
+ex-*
 
 # Also ignore build system directories
 .npmignore

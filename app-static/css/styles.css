@@ -52,14 +52,14 @@ header.title p {
   height: auto;
 }
 
-#main {
+#main-gl {
   background-color: lightblue;
   width: 100%;
   aspect-ratio: 1;
 }
 
 /* HUD div styles */
-#hud {
+#ui-html {
   background-color: lightgray;
   width: 100%;
 }

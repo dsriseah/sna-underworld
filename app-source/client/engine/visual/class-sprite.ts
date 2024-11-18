@@ -24,7 +24,6 @@ let DEFAULT_SPR_TEXTURE: THREE.Texture;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SNA_Sprite extends THREE.Sprite {
   //
-  is_sna: boolean;
   frac_width: number | null;
   frac_height: number | null;
   zoom: number;
@@ -33,7 +32,6 @@ class SNA_Sprite extends THREE.Sprite {
   tex_loader: THREE.TextureLoader;
   constructor(spriteMaterial: THREE.SpriteMaterial) {
     super(spriteMaterial);
-    this.is_sna = true;
     this.tex_loader = new THREE.TextureLoader();
     this.frac_width = null;
     this.frac_height = null;

@@ -11,6 +11,7 @@ import * as THREE from 'three';
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 type ViewportMode = 'fixed' | 'scaled' | 'fluid';
+type ScreenCapFormat = 'jpg' | 'png';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,8 +71,7 @@ class Viewport {
   }
 
   /** Step 1. Initialize the WebGL surface and size containers exactly */
-  initRenderer(cfg: any): void {
-    const { width, height, containerID } = cfg;
+  initRenderer({ width, height, containerID }): void {
     this.width = width;
     this.height = height;
     this.aspect = width / height;
@@ -79,12 +79,10 @@ class Viewport {
 
     // create THREEJS renderer
     const container = document.getElementById(containerID);
-    if (container === null) {
-      console.error('Container not found');
-      return;
-    }
+    if (container === null) throw Error(`container ${containerID} not found`);
     this.container = container;
-    this.threeGL = new THREE.WebGLRenderer(cfg);
+    this.threeGL = new THREE.WebGLRenderer();
+    this.threeGL.setClearColor(0x000000, 1);
     this.threeGL.autoClear = false;
     this.container.appendChild(this.threeGL.domElement);
 
@@ -98,44 +96,38 @@ class Viewport {
    *  the minimum guaranteed number of units to be shown in the current display.
    *  A value of 10 means that 10 units (-5 to 5) will be visible in world
    *  cameras */
-  sizeWorldToViewport(worldUnits: number = 10): void {
-    if (!this.threeGL) {
-      console.error('Call InitializeRenderer() before calling InitializeWorld()');
-      return;
-    }
-    if (!worldUnits) {
-      console.error('Call with worldUnits, the min');
-      return;
-    }
+  sizeWorldToViewport(wu: number = 10): void {
+    if (!this.threeGL) throw Error('call initRenderer() first');
+    if (typeof wu !== 'number') throw Error(`arg1 must be a number ${wu}`);
     // save world values
     this.worldOrigin = new THREE.Vector3(0, 0, 0);
     this.worldUp = new THREE.Vector3(0, 1, 0); // y-axis is up, camera looks on XY
-    this.worldUnits = worldUnits;
-    this.worldScale = Math.max(worldUnits / this.width, worldUnits / this.height);
+    this.worldUnits = wu;
+    this.worldScale = Math.max(wu / this.width, wu / this.height);
     this.worldAspect = this.width / this.height;
   }
 
   /** Step 3. Create all the cameras */
   initializeCameras(): void {
-    if (!this.worldScale) {
-      console.error('Call InitializeWorld() before calling initializeCameras()');
-      return;
-    }
+    if (!this.worldUnits) throw Error('call sizeWorldToViewport() first');
     let hw = this.width / 2;
     let hh = this.height / 2;
     this.worldAspect = hw / hh;
+    // 2D cameras use screenspace coordinates
     this.camBG = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0, 1000);
     this.camSCREEN = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0, 1000);
+    // 3d world cameras use world coordinates
     let whw = (this.width * this.worldScale) / 2;
     let whh = (this.height * this.worldScale) / 2;
     let wox = this.worldOrigin.x;
     let woy = this.worldOrigin.y;
-
+    // point 3d worldcam at world origin
     this.cam3D = new THREE.PerspectiveCamera(53.1, this.aspect, 1, 10000);
     this.cam3D.position.set(wox, woy, 10);
     this.cam3D.up = this.worldUp;
     this.cam3D.lookAt(this.worldOrigin);
 
+    // point 2d worldcam at world origin
     this.cam2D = new THREE.OrthographicCamera(
       -whw + wox,
       whw + wox,
@@ -148,13 +140,12 @@ class Viewport {
     this.cam2D.up = this.worldUp;
     this.cam2D.lookAt(this.worldOrigin);
 
-    this.camSCREEN = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0, 1000);
-
-    // update world3d camera by positioning it
-    // to default see the entire world
+    // set the 3d worldcam at distance so it can see the right number of
+    // world units defined in step 2
     let d = m_GetFramingDistance(this.cam3D, whw, whh);
     this.cam3D.position.z = d;
     this.cam2D.position.z = d;
+
     // assign default world camera as 2D
     this.camWORLD = this.cam2D;
   }
@@ -350,6 +341,14 @@ class Viewport {
   /** clear the WebGL render depth buffer only */
   clearDepth(): void {
     this.threeGL.clearDepth();
+  }
+
+  /// SCREEN CAPTURE ///
+
+  /** return a base64 encoded image of the current screen */
+  captureScreen(fmt: ScreenCapFormat = 'png'): string {
+    let img = this.threeGL.domElement.toDataURL(fmt);
+    return img;
   }
 }
 

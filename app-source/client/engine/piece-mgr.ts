@@ -6,7 +6,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
-import { HookGamePhase } from '../game-run.ts';
+import { HookGamePhase } from '../game-mcp.ts';
 import Piece from './piece/class-piece.ts';
 import MovingPiece from './piece/class-moving-piece.ts';
 

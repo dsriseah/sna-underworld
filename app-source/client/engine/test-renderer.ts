@@ -7,7 +7,7 @@
 
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
-import { HookGamePhase } from '../game-run.ts';
+import { HookGamePhase } from '../game-mcp.ts';
 // import VIEWPORT from './viewport.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ const RP_DICT: RP_Dictionary = {};
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Init() {
   const renderer = new THREE.WebGLRenderer();
-  const main = document.getElementById('main');
+  const main = document.getElementById('main-gl');
   main.appendChild(renderer.domElement);
   renderer.setSize(main.clientWidth, main.clientHeight);
   RSTATE.renderer = renderer;
