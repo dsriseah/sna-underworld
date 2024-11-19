@@ -26,13 +26,16 @@ const PR = ConsoleStyler('MCP', 'TagCyan');
 const DBG = true;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let GAME_TIMER: number; // game loop timer handle
-let FRAME_RATE = 30; // rate in frames per second
-let FRAME_DUR_MS = 1000 / 30; // duration of a frame in milliseconds
+let FRAME_RATE = 15; // rate in frames per second
+let FRAME_DUR_MS = 1000 / FRAME_RATE; // duration of a frame in milliseconds
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const STATE = {
+const TIME_STATE = {
   timeMS: 0, // increasing game time in milliseconds
   elapsedMS: 0, // since last frame in milliseconds
   frameRate: FRAME_RATE // current frame rate
+};
+const VIEW_STATE = {
+  worldUnits: 10 // number of world units per viewport
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { PhaseMachine } = CLASS;
@@ -72,10 +75,10 @@ const { RunPhaseGroup, HookPhase } = PhaseMachine;
 /** Update game loop timers */
 function m_UpdateTimers() {
   if (FRAME_RATE > 0) {
-    const oldTime = STATE.timeMS;
-    STATE.timeMS += FRAME_DUR_MS;
-    STATE.elapsedMS = STATE.timeMS - oldTime;
-    return STATE;
+    const oldTime = TIME_STATE.timeMS;
+    TIME_STATE.timeMS += FRAME_DUR_MS;
+    TIME_STATE.elapsedMS = TIME_STATE.timeMS - oldTime;
+    return TIME_STATE;
   }
 }
 
@@ -104,7 +107,7 @@ async function Start() {
 /** API: Stop the game loop */
 async function Stop() {
   clearInterval(GAME_TIMER);
-  STATE.frameRate = 0;
+  TIME_STATE.frameRate = 0;
   await RunPhaseGroup('SNA_GAME/END');
   LOG(...PR('Stopped Game Loop'));
 }
@@ -117,20 +120,24 @@ function HookGamePhase(phase: string, fn: Function) {
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Get current game loop state */
-function GetState() {
-  return STATE;
+function GetTimeState() {
+  return TIME_STATE;
 }
 function GameTimeMS() {
-  return STATE.timeMS;
+  return TIME_STATE.timeMS;
 }
 function RealFrameIntervalMS() {
-  return STATE.elapsedMS;
+  return TIME_STATE.elapsedMS;
 }
 function FrameIntervalMS() {
   return FRAME_DUR_MS;
 }
 function FrameRate() {
-  return STATE.frameRate;
+  return TIME_STATE.frameRate;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetViewState() {
+  return VIEW_STATE;
 }
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
@@ -141,7 +148,8 @@ export {
   Stop, // stop the game loop
   //
   HookGamePhase, // (phase,fn)=>void
-  GetState, // get current game loop state
+  GetTimeState, // get current game loop state
+  GetViewState, // get current view state
   //
   GameTimeMS, // current increasing gametime in milliseconds
   FrameIntervalMS, // frame duration in milliseconds based on set frame rate

@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
-import { HookGamePhase } from '../game-mcp.ts';
+import { HookGamePhase, GetViewState } from '../game-mcp.ts';
 import { GameTimeMS } from '../game-mcp.ts';
 import * as TextureMgr from './texture-mgr.ts';
 import { Viewport } from './visual/class-viewport.ts';
@@ -134,7 +134,8 @@ function Initialize() {
   const width = main.clientWidth;
   const height = main.clientHeight;
   VIEWPORT.initRenderer({ width, height, containerID: 'main-gl' });
-  VIEWPORT.sizeWorldToViewport();
+  const { worldUnits } = GetViewState(); // number of world units visible
+  VIEWPORT.sizeWorldToViewport(worldUnits);
   VIEWPORT.initializeCameras();
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
