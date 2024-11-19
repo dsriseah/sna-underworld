@@ -46,7 +46,7 @@ function SetupScene() {
   }
   VISUALS.starfields = starfields;
 
-  let sprite = VisualMgr.MakeDefaultSprite();
+  let sprite = VisualMgr.MakeSprite();
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
 }

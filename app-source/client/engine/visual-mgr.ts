@@ -28,24 +28,12 @@ const TEXTURES = {};
 /// API: SPRITES //////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a sprite with size set to texture dimensions */
-function MakeStaticSprite(texPath: string) {
-  const map = TextureMgr.Load(texPath);
-  const mat = new THREE.SpriteMaterial({ map });
-  const spr = new THREE.Sprite(mat);
-  return spr;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function MakeSNA_Sprite(texPath: string) {
+function MakeSprite(texPath?: string) {
+  if (typeof texPath !== 'string') texPath = DEFAULT_PNG;
   const map = TextureMgr.Load(texPath);
   const mat = new THREE.SpriteMaterial({ map });
   const spr = new SNA_Sprite(mat);
   return spr;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** create a sprite using default texture */
-function MakeDefaultSprite() {
-  return MakeSNA_Sprite(DEFAULT_PNG);
-  // return MakeStaticSprite(DEFAULT_PNG);
 }
 
 /// API: CUSTOM VISUALS ///////////////////////////////////////////////////////
@@ -91,7 +79,6 @@ export default SNA.DeclareModule('visualfactory', {
 /// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
-  MakeDefaultSprite, // make a placeholder sprite
-  MakeStaticSprite, // make a sprite with a specific texture
+  MakeSprite, // make a placeholder sprite
   MakeStarField // make a positionable starfield
 };
