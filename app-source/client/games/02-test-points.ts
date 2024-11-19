@@ -47,6 +47,10 @@ function SetupScene() {
   Renderer.RP_AddVisual('world', defaultSprite);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function Prepare() {
+  LOG(...PR('Preparing "02 Test Simple Points"'));
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
   const { points, sprite } = VISUALS;
   points.rotation.x += 0.001;
@@ -60,6 +64,7 @@ function Update() {
 export default SNA.DeclareModule('game', {
   PreHook: () => {
     HookGamePhase('CONSTRUCT', SetupScene);
+    HookGamePhase('START', Prepare);
     HookGamePhase('UPDATE', Update);
   }
 });

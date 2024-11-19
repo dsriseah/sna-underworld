@@ -1,6 +1,6 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  03 TEST VISUALS - fix the VisualManager module
+  04 TEST MAZE - test the maze class
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -9,6 +9,7 @@ import { HookGamePhase, GetViewState } from '../game-mcp.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/renderer.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
+import { MazePlayer } from '../engine/players/play-maze.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20,13 +21,13 @@ const LOG = console.log.bind(this);
 const PR = ConsoleStyler('game', 'TagOrange');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const VISUALS: { [key: string]: any } = {};
+const PLAYERS: { [key: string]: any } = {};
+let WU: number;
 
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
-  // let starfield = VisualMgr.MakeStarField(new THREE.Color(0x888888));
-  // Renderer.RP_AddVisual('world', starfield);
-  // VISUALS.starfield = starfield;
+  WU = GetViewState().worldUnits;
 
   let starBright = [
     new THREE.Color(1.0, 1.0, 1.0),
@@ -46,25 +47,35 @@ function SetupScene() {
   }
   VISUALS.starfields = starfields;
 
-  let sprite = VisualMgr.MakeSprite();
+  let maze = new MazePlayer();
+  let wallSprites = maze.getVisuals();
+  wallSprites.forEach(sprite => {
+    Renderer.RP_AddVisual('world', sprite);
+  });
+
+  let sprite = VisualMgr.MakeSprite('sprites/ship.png');
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Prepare() {
-  LOG(...PR('Preparing "03 VisualMgr Test"'));
-  const { sprite } = VISUALS;
-  setInterval(() => {
-    if (sprite.visible) sprite.hide();
-    else sprite.show();
-    sprite.opacity = 0.5;
-  }, 500);
+  LOG(...PR('Preparing "04 Test Maze Visual"'));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
   const { sprite, starfields } = VISUALS;
   sprite.changeHeadingBy(0.01);
-  sprite.position.x += 0.1;
+  const WU2 = WU / 2;
+  const ang = sprite.material.rotation;
+  // convert head to vector
+  const dx = Math.cos(ang);
+  const dy = Math.sin(ang);
+  // move the sprite
+  sprite.position.x += dx * 0.01;
+  sprite.position.y += dy * 0.01;
+  if (sprite.position.x > WU2) sprite.position.x = -WU2;
+  if (sprite.position.y > WU2) sprite.position.x = -WU2;
+  // update tracking cameras
   Renderer.GetViewport().track(sprite.position);
   for (let sf of starfields) sf.track(sprite.position);
 }
