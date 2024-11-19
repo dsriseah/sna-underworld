@@ -37,6 +37,9 @@ const TIME_STATE = {
 const VIEW_STATE = {
   worldUnits: 10 // number of world units per viewport
 };
+const PATHS = {
+  datapackPath: '_datapack/underworld/' // points to the game's data pack
+};
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { PhaseMachine } = CLASS;
 const PM = new PhaseMachine('SNA_GAME', {
@@ -139,6 +142,10 @@ function FrameRate() {
 function GetViewState() {
   return VIEW_STATE;
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetPaths() {
+  return PATHS;
+}
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -150,6 +157,7 @@ export {
   HookGamePhase, // (phase,fn)=>void
   GetTimeState, // get current game loop state
   GetViewState, // get current view state
+  GetPaths, // get current game paths
   //
   GameTimeMS, // current increasing gametime in milliseconds
   FrameIntervalMS, // frame duration in milliseconds based on set frame rate

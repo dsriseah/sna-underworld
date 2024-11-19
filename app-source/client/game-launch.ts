@@ -21,7 +21,8 @@ import MOD_VISUAL from './engine/visual-mgr.ts';
 // import GAME from './games/00-test-mesh.ts';
 // import GAME from './games/01-test-sprite.ts';
 // import GAME from './games/02-test-points.ts';
-import GAME from './games/03-test-visuals.ts';
+// import GAME from './games/03-test-visuals.ts';
+import GAME from './games/04-test-maze.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

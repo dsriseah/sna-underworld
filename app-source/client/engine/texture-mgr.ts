@@ -13,6 +13,7 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
+import { GetPaths } from '../game-mcp.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -23,7 +24,7 @@ const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('visual', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DATAPACK_DIR = '_datapack/underworld/';
+const DATAPACK_DIR = GetPaths().datapackPath;
 const DEFAULT_PNG = 'sprites/default.png';
 const TEX_LOADER = new THREE.TextureLoader();
 const TEXTURES = {};
