@@ -17,6 +17,7 @@ SPC=$(printf "%*s" ${#NOM} | tr ' ' ' ')
 if [ -z "$1" ]; then
   printf "\n"
   printf "$NOM: ${ALRT}ARG1 must be a directory path${NRML}\n"
+  printf "$SPC  Usage: $NOM dir\n"
   printf "\n"
   exit 1
 fi
@@ -56,7 +57,6 @@ BNAME=$(git rev-parse --abbrev-ref HEAD)
 SHA=$(git rev-parse --short HEAD)
 # create the zip file name
 ZNAME="$PNAME $BDATE $BNAME #$SHA.zip"
-# replace spaces with "\ " in ZNAME
 ZSRC="$1/*"
 # zip the directory
 printf "\n"
