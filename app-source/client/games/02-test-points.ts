@@ -7,7 +7,7 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
 import * as THREE from 'three';
-import * as Renderer from '../engine/renderer.ts';
+import * as Renderer from '../engine/render-mgr.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

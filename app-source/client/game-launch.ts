@@ -15,7 +15,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as MCP from './game-mcp.ts';
-import MOD_RENDER from './engine/renderer.ts';
+import MOD_RENDER from './engine/render-mgr.ts';
 import MOD_TEXTURE from './engine/texture-mgr.ts';
 import MOD_VISUAL from './engine/visual-mgr.ts';
 // import GAME from './games/00-test-mesh.ts';

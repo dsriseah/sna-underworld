@@ -11,7 +11,7 @@ import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase, GetViewState } from '../game-mcp.ts';
 import { GameTimeMS } from '../game-mcp.ts';
 import * as TextureMgr from './texture-mgr.ts';
-import { Viewport } from './visual/class-viewport.ts';
+import { Viewport } from './visuals/class-viewport.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
