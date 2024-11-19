@@ -40,18 +40,22 @@ SNA.Hook('LOAD_CONFIG', () => {});
     'color: #ff0000;padding:4px 8px;' +
     'background-color:#ff000020;font-weight:bold;';
 
+  const cfg: any = {};
   if (isSecure && noPortSpec) {
     LOG('%cRunning in Production Mode', cssPro);
-    SNA.GlobalConfig({ no_urnet: true, no_hmr: true });
+    cfg.no_urnet = true;
+    cfg.no_hmr = true;
   } else {
     LOG('%cRunning in Development Mode', cssDev);
-    SNA.GlobalConfig({});
   }
 
-  // register all components before SNA.Start() is called
+  // call global config and then register Launcher, which will register all
+  // other modules for the game side.
+  console.groupCollapsed('SNA STARTUP INFO');
+  SNA.GlobalConfig(cfg);
   SNA.RegisterComponent(MOD_Launcher);
-
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.
   await SNA.Start();
+  console.groupEnd();
 })();
