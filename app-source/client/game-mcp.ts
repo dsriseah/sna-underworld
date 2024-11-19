@@ -92,10 +92,12 @@ async function Init() {}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** API: Start the game loop */
 async function Start() {
-  LOG(...PR('Game Initializing'));
+  const pre = 'Game Lifecycle';
+  LOG(...PR(`${pre} is initializing`));
   // first run the INIT phase group
   await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
+  LOG(...PR(`${pre} tick rate set to ${FRAME_DUR_MS.toFixed(2)}ms`));
   GAME_TIMER = setInterval(async () => {
     if (m_UpdateTimers().frameRate > 0) {
       await RunPhaseGroup('SNA_GAME/LOOP_BEGIN');
@@ -104,7 +106,7 @@ async function Start() {
       await RunPhaseGroup('SNA_GAME/LOOP_RENDER');
     }
   }, FRAME_DUR_MS);
-  LOG(...PR('Game Loop Started'));
+  LOG(...PR(`${pre} is running (${FRAME_RATE}fps)`));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** API: Stop the game loop */
