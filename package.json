@@ -5,7 +5,7 @@
   "scripts": {
     "core": "ts-node-esm --transpile-only ../_ur/npm-scripts/@build-core.mts",
     "dev": "npm run core && ts-node-esm  --transpile-only ./@build-underworld.mts",
-    "zip:public": "zip -r sna-underworld.zip _public/*"
+    "package:zip": "zip -r sna-underworld.zip _public/*"
   },
   "author": "dsriseah",
   "license": "MIT",
