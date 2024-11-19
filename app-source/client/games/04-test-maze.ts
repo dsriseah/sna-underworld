@@ -82,7 +82,7 @@ function Update() {
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('game', {
+export default SNA.DeclareModule('04-test-maze', {
   PreHook: () => {
     HookGamePhase('CONSTRUCT', SetupScene);
     HookGamePhase('START', Prepare);

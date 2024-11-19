@@ -39,7 +39,7 @@ function Update() {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('game', {
+export default SNA.DeclareModule('00-test-mesh', {
   PreHook: () => {
     HookGamePhase('CONSTRUCT', SetupScene);
     HookGamePhase('UPDATE', Update);

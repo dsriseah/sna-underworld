@@ -69,11 +69,11 @@ function LoadAsync(texPath: string): Promise<THREE.Texture> {
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async function PreloadTextures() {
-  LOG(...PR('...preloading', DEFAULT_PNG));
+  LOG(...PR('.. preloading', DEFAULT_PNG));
   await LoadAsync(DEFAULT_PNG);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('textures', {
+export default SNA.DeclareModule('TextureMgr', {
   PreHook: () => {
     HookGamePhase('LOAD_ASSETS', PreloadTextures);
   }

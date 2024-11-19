@@ -158,7 +158,7 @@ function DrawWorld() {
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('renderer', {
+export default SNA.DeclareModule('RenderMgr', {
   PreHook: () => {
     HookGamePhase('INIT', () => {
       Initialize();

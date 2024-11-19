@@ -68,7 +68,7 @@ function SNA_PreHook() {
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('launcher', {
+export default SNA.DeclareModule('Launcher', {
   AddModule: SNA_AddModule,
   PreConfig: SNA_PreConfig,
   PreHook: SNA_PreHook

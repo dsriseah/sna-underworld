@@ -9,8 +9,8 @@ import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
 import * as TextureMgr from './texture-mgr.ts';
-import { SNA_Sprite } from './visual/class-sprite.ts';
-import { SNA_Starfield } from './visual/class-starfield.ts';
+import { SNA_Sprite } from './visuals/vis-sprite.ts';
+import { SNA_Starfield } from './visuals/vis-starfield.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,7 +70,7 @@ function VisualUpdates() {
   // update all frame-based autonomous visual elements
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('visualfactory', {
+export default SNA.DeclareModule('VisualMgr', {
   PreHook: () => {
     HookGamePhase('UPDATE', VisualUpdates);
   }
