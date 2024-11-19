@@ -10,8 +10,8 @@ import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
 import { GameTimeMS } from '../game-mcp.ts';
-import { LoadTexture } from './texture-mgr.ts';
-import Viewport from './visual/class-viewport.ts';
+import * as TextureMgr from './texture-mgr.ts';
+import { Viewport } from './visual/class-viewport.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,8 +71,8 @@ function RP_GetScene(pass: RP_Name): THREE.Scene {
   return RP_DICT[pass].scene;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-async function RP_SetBackgroundImage(texPath: string) {
-  const texture = await LoadTexture(texPath);
+function RP_SetBackgroundImage(texPath: string) {
+  const texture = TextureMgr.Load(texPath);
   const mat = new THREE.SpriteMaterial({ map: texture });
   BG_SPRITE = new THREE.Sprite(mat);
   BG_SPRITE.position.set(0, 0, -999);
@@ -155,7 +155,7 @@ function DrawWorld() {
   m_CheckCaptureScreen();
 }
 
-/// EXPORTS ///////////////////////////////////////////////////////////////////
+/// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('renderer', {
   PreHook: () => {
@@ -167,6 +167,8 @@ export default SNA.DeclareModule('renderer', {
     });
   }
 });
+
+/// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
   // viewport utilities

@@ -16,9 +16,12 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as MCP from './game-mcp.ts';
 import MOD_RENDER from './engine/renderer.ts';
+import MOD_TEXTURE from './engine/texture-mgr.ts';
+import MOD_VISUAL from './engine/visual-mgr.ts';
 // import GAME from './games/00-test-mesh.ts';
 // import GAME from './games/01-test-sprite.ts';
-import GAME from './games/02-test-points.ts';
+// import GAME from './games/02-test-points.ts';
+import GAME from './games/03-test-visuals.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35,6 +38,8 @@ const LOG = console.log.bind(this);
 function SNA_AddModule({ f_AddModule }) {
   // register all components before SNA.Start() is called
   f_AddModule(MOD_RENDER);
+  f_AddModule(MOD_TEXTURE);
+  f_AddModule(MOD_VISUAL);
   f_AddModule(GAME);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,7 +65,7 @@ function SNA_PreHook() {
   });
 }
 
-/// EXPORTS ///////////////////////////////////////////////////////////////////
+/// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('launcher', {
   AddModule: SNA_AddModule,

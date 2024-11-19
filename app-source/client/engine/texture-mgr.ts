@@ -3,6 +3,11 @@
   TextureManager - manages loaded texture assets in a dictionary. It's used
   by VisualFactory to load and retrieve textures for sprites.
 
+  https://threejs.org/docs/#api/en/loaders/TextureLoader
+  this seems to immediately return a texture object, so the datastructure
+  is available immediately after the load() call. However, the dimension
+  data is not.
+
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
@@ -18,52 +23,65 @@ const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('visual', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DEFAULT_PNG = '_datapack/underworld/sprites/default.png';
+const DATAPACK_DIR = '_datapack/underworld/';
+const DEFAULT_PNG = 'sprites/default.png';
 const TEX_LOADER = new THREE.TextureLoader();
 const TEXTURES = {};
 
 /// API METHODS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** return a preloaded texture */
-function GetTexture(texPath: string): THREE.Texture {
+/** return a previously loaded texture */
+function Get(texPath: string): THREE.Texture {
   return TEXTURES[texPath];
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** async load a texture and return it */
-async function LoadTexture(texPath: string): Promise<THREE.Texture> {
-  const texture = GetTexture(texPath);
-  if (texture) return Promise.resolve(texture);
-  // otherwise load it
+/** load a texture and return a valid data structure even though the asset
+ *  may still be loading. */
+function Load(texPath: string): THREE.Texture {
+  let texture = Get(texPath);
+  if (texture) return texture;
+  texture = TEX_LOADER.load(DATAPACK_DIR + texPath);
+  if (texture) {
+    TEXTURES[texPath] = texture;
+    return texture;
+  }
+  throw Error(`texture ${texPath} not found`);
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function LoadAsync(texPath: string): Promise<THREE.Texture> {
   return new Promise((resolve, reject) => {
-    TEX_LOADER.load(
-      texPath,
-      texture => {
-        TEXTURES[texPath] = texture;
-        resolve(texture);
-      },
-      undefined,
-      err => {
-        reject(err);
-      }
-    );
+    let texture = Get(texPath);
+    if (texture) resolve(texture);
+    else {
+      TEX_LOADER.load(
+        DATAPACK_DIR + texPath, //
+        texture => {
+          TEXTURES[texPath] = texture;
+          resolve(texture);
+        },
+        undefined,
+        err => reject(err)
+      );
+    }
   });
 }
-
-/// EXPORTS ///////////////////////////////////////////////////////////////////
+/// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** Invoked by HookGamePhase  in SNA_Module declaration */
-async function LoadTextures() {
-  const tex = await LoadTexture(DEFAULT_PNG);
-  LOG('loaded default texture:', tex);
+async function PreloadTextures() {
+  LOG(...PR('...preloading', DEFAULT_PNG));
+  await LoadAsync(DEFAULT_PNG);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('textures', {
   PreHook: () => {
-    HookGamePhase('LOAD_ASSETS', async () => {
-      LOG(...PR('loading default texture(s)'));
-      await LoadTextures();
-    });
+    HookGamePhase('LOAD_ASSETS', PreloadTextures);
   }
 });
+
+/// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export { GetTexture, LoadTexture };
+export {
+  Get, // get a texture from the cache
+  Load, // load a texture and return its map immediately
+  LoadAsync // load a texture and promise to return its map
+};

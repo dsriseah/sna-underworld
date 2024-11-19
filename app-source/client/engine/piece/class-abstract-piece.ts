@@ -105,6 +105,5 @@ abstract class AbstractPiece implements I_PieceThink {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default AbstractPiece;
 export { AbstractPiece };
 export type { RoleTypes };

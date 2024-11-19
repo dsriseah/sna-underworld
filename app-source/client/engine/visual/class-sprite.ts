@@ -7,6 +7,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { OpReturn } from '@ursys/core';
+import * as TextureMgr from '../texture-mgr';
 import * as THREE from 'three';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -14,7 +15,7 @@ import * as THREE from 'three';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DEFAULT_PNG = '_datapack/underworld/sprites/default.png';
+const DEFAULT_PNG = 'sprites/default.png';
 let DEFAULT_SPR_TEXTURE: THREE.Texture;
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////
@@ -29,10 +30,8 @@ class SNA_Sprite extends THREE.Sprite {
   zoom: number;
   texture_path: string;
   //
-  tex_loader: THREE.TextureLoader;
   constructor(spriteMaterial: THREE.SpriteMaterial) {
     super(spriteMaterial);
-    this.tex_loader = new THREE.TextureLoader();
     this.frac_width = null;
     this.frac_height = null;
     this.zoom = 1;
@@ -47,26 +46,18 @@ class SNA_Sprite extends THREE.Sprite {
 
   /** is texture already loaded for sprite? */
   _texLoaded(texPath?: string): boolean {
-    if (typeof texPath === 'string') {
-      return this.texture_path === texPath;
-    }
+    const texture = TextureMgr.Get(texPath);
+    return texture !== undefined;
   }
 
   /** async load a texture and return it */
   async _loadTexture(texPath: string): Promise<THREE.Texture> {
     if (this._texLoaded(texPath)) return this.material.map;
+    let texture = await TextureMgr.Load(texPath);
+    console.log('loaded texture', texture);
     return new Promise((resolve, reject) => {
-      this.tex_loader.load(
-        texPath,
-        texture => {
-          this.texture_path = texPath;
-          resolve(texture);
-        },
-        undefined,
-        err => {
-          reject(err);
-        }
-      );
+      if (texture) resolve(texture);
+      else reject(`texture ${texPath} not loaded`);
     });
   }
 
@@ -158,5 +149,4 @@ class SNA_Sprite extends THREE.Sprite {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA_Sprite;
 export { SNA_Sprite };

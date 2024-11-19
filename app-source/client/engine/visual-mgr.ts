@@ -9,7 +9,7 @@ import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
 import { SNA_Sprite } from './visual/class-sprite.ts';
-import { GetTexture } from './texture-mgr.ts';
+import * as TextureMgr from './texture-mgr.ts';
 import { StarField } from './visual/class-starfield.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -21,24 +21,19 @@ const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('visual', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DEFAULT_PNG = '_datapack/underworld/sprites/default.png';
+const DEFAULT_PNG = 'sprites/default.png';
 const TEX_LOADER = new THREE.TextureLoader();
 const TEXTURES = {};
-
-/// GAME LIFECYCLE HELPERS ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** Invoked by HookGamePhase  in SNA_Module declaration */
-function m_UpdateSequencers() {
-  // update all sequencers
-}
 
 /// API: CUSTOM METHODS ///////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a positionable starfield */
-function MakeStarField(color: THREE.Color, opt: { parallax: number }): StarField {
+function MakeStarField(color: THREE.Color, opt?: { parallax: number }): StarField {
   const sf = new StarField(color);
-  const { parallax } = opt;
-  if (parallax) sf.setParallax(parallax);
+  if (opt !== undefined) {
+    const { parallax } = opt;
+    if (parallax) sf.setParallax(parallax);
+  }
   return sf;
 }
 
@@ -46,13 +41,11 @@ function MakeStarField(color: THREE.Color, opt: { parallax: number }): StarField
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a sprite with size set to texture dimensions */
 function MakeStaticSprite(texPath: string) {
-  const texture = GetTexture(texPath);
-  if (texture === undefined) throw Error(`asset ${texPath} not found`);
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-  const spr = new SNA_Sprite(spriteMaterial);
-  const { width, height } = texture.image;
-  spr.setScaleXYZ(width, height, 1);
-  return;
+  // const map = new THREE.TextureLoader().load(texPath);
+  const map = TextureMgr.Load(texPath);
+  const mat = new THREE.SpriteMaterial({ map });
+  const spr = new THREE.Sprite(mat);
+  return spr;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a sprite using default texture */
@@ -73,16 +66,19 @@ function MakeAreaCircle({ radius, segments, color, opacity }) {}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function MakeLine({ color, lineWidth }) {}
 
-/// EXPORTS ///////////////////////////////////////////////////////////////////
+/// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function VisualUpdates() {
+  // update all frame-based autonomous visual elements
+}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('visualfactory', {
   PreHook: () => {
-    HookGamePhase('INIT', async () => {});
-    HookGamePhase('UPDATE', () => {
-      m_UpdateSequencers();
-    });
+    HookGamePhase('UPDATE', VisualUpdates);
   }
 });
+
+/// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
   MakeDefaultSprite, // make a placeholder sprite
