@@ -10,17 +10,6 @@ import { OpReturn } from '@ursys/core';
 import * as TextureMgr from '../texture-mgr';
 import * as THREE from 'three';
 
-/// TYPE DECLARATIONS /////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DEFAULT_PNG = 'sprites/default.png';
-let DEFAULT_SPR_TEXTURE: THREE.Texture;
-
-/// HELPER METHODS ////////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SNA_Sprite extends THREE.Sprite {
@@ -45,26 +34,13 @@ class SNA_Sprite extends THREE.Sprite {
   /// TEXTURE LOADERS ///
 
   /** is texture already loaded for sprite? */
-  _texLoaded(texPath?: string): boolean {
-    const texture = TextureMgr.Get(texPath);
-    return texture !== undefined;
-  }
-
-  /** async load a texture and return it */
-  async _loadTexture(texPath: string): Promise<THREE.Texture> {
-    if (this._texLoaded(texPath)) return this.material.map;
-    let texture = await TextureMgr.Load(texPath);
-    console.log('loaded texture', texture);
-    return new Promise((resolve, reject) => {
-      if (texture) resolve(texture);
-      else reject(`texture ${texPath} not loaded`);
-    });
+  _texLoaded(): boolean {
+    return this.material.map !== null;
   }
 
   /** load a texture and set it as the sprite's texture */
   async setTexture(texPath: string) {
-    const tex = await this._loadTexture(texPath);
-    tex.mapping = THREE.UVMapping;
+    const tex = await TextureMgr.LoadAsync(texPath);
     this.material.map = tex;
     this.material.needsUpdate = true;
     const ww = tex.image.width;
@@ -72,28 +48,59 @@ class SNA_Sprite extends THREE.Sprite {
     this.setScaleXYZ(ww, hh, 1);
   }
 
-  /// ROTATION ///
+  /// COLOR AND ALPHA ///
+  /// see SpriteMaterial and Material properties
 
-  /** rotate the sprite */
-  rotate(rot: number) {
+  /** add opacity property to sprite */
+  set opacity(op: number) {
+    if (typeof op !== 'number') {
+      this.material.transparent = false;
+      this.material.opacity = 1;
+    } else {
+      this.material.transparent = true;
+      this.material.opacity = op;
+    }
+  }
+  get opacity() {
+    return this.material.opacity;
+  }
+
+  /// POSITION ///
+  /// see Three.Object3D position property
+  /// https://threejs.org/docs/index.html#api/en/core/Object3D
+
+  /// ROTATION ///
+  /// sprite rotation is rotation of the material, not Object3D
+
+  /** add method to set rotation directly */
+  setHeading(rot: number) {
     this.material.rotation = rot;
   }
 
-  /// SIZING ///
-
-  /** get texture size in image dimensions */
-  getTextureSize(): OpReturn {
-    if (this._texLoaded()) {
-      return {
-        w: this.material.map.image.width,
-        h: this.material.map.image.height
-      };
-    }
-    return { error: 'texture not loaded' };
+  /** add method to nudge the rotation by an amount */
+  changeHeadingBy(rot: number) {
+    this.material.rotation -= rot;
   }
 
-  /** return fractional size of sprite */
-  getSize(): OpReturn {
+  /// SIZING ///
+  /// sizing a sprite is done by scaling the sprite material map
+
+  /** get original texture size in image dimensions */
+  getTextureSize(): { w: number; h: number } {
+    if (this._texLoaded()) {
+      const { width, height } = this.material.map.image;
+      return {
+        w: width,
+        h: height
+      };
+    }
+    console.error('getTextureSize: material map not loaded');
+    return { w: 0, h: 0 };
+  }
+
+  /** return fractional size of sprite, which corresponds
+   *  to size in pixels based on the spritesheet dimensions */
+  getSize(): { w: number; h: number } {
     if (this._texLoaded()) {
       const fracWidth = this.frac_width || 1;
       const fracHeight = this.frac_height || 1;
@@ -102,8 +109,10 @@ class SNA_Sprite extends THREE.Sprite {
       dim.h *= fracHeight;
       return dim;
     }
+    console.error('getSize: material map not loaded');
     return {
-      error: `texture not yet loaded, size can't be computed`
+      w: 0,
+      h: 0
     };
   }
 
@@ -119,14 +128,15 @@ class SNA_Sprite extends THREE.Sprite {
   }
 
   /** set the zoom level of the sprite */
-  setZoom(s: number): OpReturn {
+  setZoom(s: number): { w: number; h: number } {
     this.zoom = s;
     if (this._texLoaded()) {
       const { w, h } = this.getSize();
       this.setScaleXYZ(w, h, 1);
       return { w, h };
     }
-    return { error: `texture not yet loaded, zoom can't be computed` };
+    console.error('setZoom: material map not loaded');
+    return { w: 0, h: 0 };
   }
 
   /** reutrn the current zoom level */

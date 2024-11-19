@@ -25,7 +25,30 @@ const DEFAULT_PNG = 'sprites/default.png';
 const TEX_LOADER = new THREE.TextureLoader();
 const TEXTURES = {};
 
-/// API: CUSTOM METHODS ///////////////////////////////////////////////////////
+/// API: SPRITES //////////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** create a sprite with size set to texture dimensions */
+function MakeStaticSprite(texPath: string) {
+  const map = TextureMgr.Load(texPath);
+  const mat = new THREE.SpriteMaterial({ map });
+  const spr = new THREE.Sprite(mat);
+  return spr;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function MakeSNA_Sprite(texPath: string) {
+  const map = TextureMgr.Load(texPath);
+  const mat = new THREE.SpriteMaterial({ map });
+  const spr = new SNA_Sprite(mat);
+  return spr;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** create a sprite using default texture */
+function MakeDefaultSprite() {
+  return MakeSNA_Sprite(DEFAULT_PNG);
+  // return MakeStaticSprite(DEFAULT_PNG);
+}
+
+/// API: CUSTOM VISUALS ///////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a positionable starfield */
 function MakeStarField(color: THREE.Color, opt?: { parallax: number }): StarField {
@@ -37,23 +60,7 @@ function MakeStarField(color: THREE.Color, opt?: { parallax: number }): StarFiel
   return sf;
 }
 
-/// API: SPRITE METHODS ///////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** create a sprite with size set to texture dimensions */
-function MakeStaticSprite(texPath: string) {
-  // const map = new THREE.TextureLoader().load(texPath);
-  const map = TextureMgr.Load(texPath);
-  const mat = new THREE.SpriteMaterial({ map });
-  const spr = new THREE.Sprite(mat);
-  return spr;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** create a sprite using default texture */
-function MakeDefaultSprite() {
-  return MakeStaticSprite(DEFAULT_PNG);
-}
-
-/// API: MESH METHODS /////////////////////////////////////////////////////////
+/// API: MESHES ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function MakeGroundPlane({ width, depth, color }) {}
 function MakeSphere({ radius, segmentsW, segmentsH }) {}
@@ -62,7 +69,7 @@ function MakeRectangle({ width, height, color }) {}
 function MakeCircle({ radius, segments, color }) {}
 function MakeAreaCircle({ radius, segments, color, opacity }) {}
 
-/// API: LINE METHODS /////////////////////////////////////////////////////////
+/// API: LINES ////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function MakeLine({ color, lineWidth }) {}
 
