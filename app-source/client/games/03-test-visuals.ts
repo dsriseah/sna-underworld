@@ -24,6 +24,28 @@ const VISUALS: { [key: string]: any } = {};
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
+  // let starfield = VisualMgr.MakeStarField(new THREE.Color(0x888888));
+  // Renderer.RP_AddVisual('world', starfield);
+  // VISUALS.starfield = starfield;
+
+  let starBright = [
+    new THREE.Color(1.0, 1.0, 1.0),
+    new THREE.Color(0.5, 0.5, 0.7),
+    new THREE.Color(0.3, 0.3, 0.5)
+  ];
+  let starSpec = {
+    parallax: 1
+  };
+  let starfields = [];
+  for (let i = 0; i < 3; i++) {
+    let sf = VisualMgr.MakeStarField(starBright[i], starSpec);
+    starSpec.parallax *= 0.5;
+    sf.position.set(0, 0, -100 - i);
+    Renderer.RP_AddVisual('bg', sf);
+    starfields.push(sf);
+  }
+  VISUALS.starfields = starfields;
+
   let sprite = VisualMgr.MakeDefaultSprite();
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
@@ -31,7 +53,6 @@ function SetupScene() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Prepare() {
   const { sprite } = VISUALS;
-  sprite.position.set(0, 0, 0);
   setInterval(() => {
     if (sprite.visible) sprite.hide();
     else sprite.show();
@@ -40,8 +61,13 @@ function Prepare() {
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
-  const { sprite } = VISUALS;
+  const { sprite, starfields } = VISUALS;
   sprite.changeHeadingBy(0.01);
+  sprite.position.x += 0.1;
+  Renderer.GetViewport().track(sprite.position);
+  for (let sf of starfields) {
+    sf.track(sprite.position);
+  }
 }
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////

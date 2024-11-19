@@ -8,9 +8,9 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
-import { SNA_Sprite } from './visual/class-sprite.ts';
 import * as TextureMgr from './texture-mgr.ts';
-import { StarField } from './visual/class-starfield.ts';
+import { SNA_Sprite } from './visual/class-sprite.ts';
+import { SNA_Starfield } from './visual/class-starfield.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,8 +51,11 @@ function MakeDefaultSprite() {
 /// API: CUSTOM VISUALS ///////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a positionable starfield */
-function MakeStarField(color: THREE.Color, opt?: { parallax: number }): StarField {
-  const sf = new StarField(color);
+function MakeStarField(
+  color: THREE.Color,
+  opt?: { parallax: number }
+): SNA_Starfield {
+  const sf = new SNA_Starfield(color);
   if (opt !== undefined) {
     const { parallax } = opt;
     if (parallax) sf.setParallax(parallax);

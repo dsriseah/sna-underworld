@@ -8,6 +8,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
+import { GetViewState } from '../../game-mcp';
 import * as THREE from 'three';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -18,18 +19,33 @@ const PR = ConsoleStyler('starfield', 'TagGreen');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const STAR_SIZE = 1.5;
-const STAR_DENSITY = 10;
-const FIELD_SIZE = 2048;
-const FIELD_CLAMP = FIELD_SIZE / 2;
-const FIELD_BOUND = FIELD_CLAMP / 2;
+const STAR_SIZE = 1; // based on the world units visible in viewport
+const STAR_DENSITY = 10; // number of stars per world unit
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** create a dummy starfield for testing */
+function m_GenerateDummyGeometry(color: THREE.Color) {
+  const vertices = [];
+  for (let i = 0; i < 10000; i++) {
+    const x = THREE.MathUtils.randFloatSpread(2000);
+    const y = THREE.MathUtils.randFloatSpread(2000);
+    const z = THREE.MathUtils.randFloatSpread(2000);
+    vertices.push(x, y, z);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  return geometry;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** create a point cloud geometry for the starfield. The algorithm draws a
+ *  grid of uniformarly spaced points and then randomly offsets them to create
+ *  a more natural look. */
 function m_GeneratePointsGeometry(color: THREE.Color) {
+  //
   let pointsWide = STAR_DENSITY * 2;
   let pointsHigh = STAR_DENSITY * 2;
-  let geometry = new THREE.BufferGeometry();
+
   let numPoints = pointsWide * pointsHigh;
   let off = numPoints / 4;
   if (Math.floor(off) !== off)
@@ -38,6 +54,7 @@ function m_GeneratePointsGeometry(color: THREE.Color) {
   let positions = new Float32Array(numPoints * 3);
   let colors = new Float32Array(numPoints * 3);
 
+  // calculate colors and positions array
   let k = 0;
   let dx = 1 / pointsWide;
   let dy = 1 / pointsHigh;
@@ -50,7 +67,8 @@ function m_GeneratePointsGeometry(color: THREE.Color) {
       let y = v - 0.5 + (Math.random() - 0.5) * dy;
       let z = 0;
 
-      // console.log(3*k,3*(k+off),3*(k+off*2),3*(k+off*3));
+      // the algorithm produces coordinates between -0.5 and +0.5
+      // console.log(3 * k, 3 * (k + off), 3 * (k + off * 2), 3 * (k + off * 3));
       positions[3 * k] = x;
       positions[3 * k + 1] = y;
       positions[3 * k + 2] = z;
@@ -88,45 +106,56 @@ function m_GeneratePointsGeometry(color: THREE.Color) {
       k++;
     }
   }
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  geometry.computeBoundingBox();
+
+  // create geometry buffer
+  let geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  const { worldUnits } = GetViewState();
+  geometry.scale(worldUnits * 4, worldUnits * 4, 0);
   return geometry;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*	utility method to calculate repositioning of the starfield to create
-    illusion of infinite space with just one grid. */
-function u_WrapCoordinates(c) {
-  c = c % FIELD_CLAMP;
+/**	utility method to calculate repositioning of the starfield to create
+ *  illusion of infinite space with just one grid. */
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+const FIELD_SIZE = 10; // size of the starfield grid
+const FIELD_CLAMP = FIELD_SIZE / 2; // half the size of the field
+const FIELD_BOUND = FIELD_CLAMP / 2; // quarter the size of the field
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function u_WrapCoordinates(c: number) {
+  c = c % FIELD_CLAMP; // modulus
   if (c > +FIELD_BOUND) c = c - FIELD_CLAMP;
   if (c < -FIELD_BOUND) c = c + FIELD_CLAMP;
+  // console.log(`old:${old.toFixed(2)}\tmod:${mod.toFixed(2)}\tnew:${c.toFixed(2)}`);
   return c;
 }
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class StarField extends THREE.Points {
+class SNA_Starfield extends THREE.Points {
   color: THREE.Color;
   parallax: number;
-  geo: THREE.BufferGeometry;
-  mat: THREE.PointsMaterial;
 
   /// INIT ///
 
-  constructor(color: THREE.Color) {
+  constructor(color: THREE.Color, opt?: { parallax: number }) {
     super();
     this.color = color;
-    this.parallax = 1;
-    this.geo = m_GeneratePointsGeometry(color);
-    this.mat = new THREE.PointsMaterial({
-      size: STAR_SIZE,
-      vertexColors: true,
-      sizeAttenuation: false
+    this.parallax = opt?.parallax || 1;
+    const geo = m_GeneratePointsGeometry(color);
+    // const geo = m_GenerateDummyGeometry(color);
+    const { worldUnits } = GetViewState();
+    const mat = new THREE.PointsMaterial({
+      color: color || 0x888888,
+      size: STAR_SIZE / worldUnits
     });
+    this.material = mat;
+    this.geometry = geo;
   }
 
   /** set the parallax effect factor */
-  setParallax(p) {
+  setParallax(p: number) {
     this.parallax = p;
   }
 
@@ -136,6 +165,7 @@ class StarField extends THREE.Points {
   trackXYZ(x: number, y: number, z: number) {
     let xx = u_WrapCoordinates(-x * this.parallax);
     let yy = u_WrapCoordinates(-y * this.parallax);
+    // console.log(`old:${x.toFixed(2)} new:${xx.toFixed(2)}`);
     this.position.x = xx;
     this.position.y = yy;
     this.position.z = z * this.parallax;
@@ -156,4 +186,4 @@ class StarField extends THREE.Points {
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export { StarField };
+export { SNA_Starfield };
