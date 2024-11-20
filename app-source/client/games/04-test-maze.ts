@@ -5,7 +5,8 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-import { HookGamePhase, GetViewState } from '../game-mcp.ts';
+import { HookGamePhase } from '../game-mcp.ts';
+import { GetViewState } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';

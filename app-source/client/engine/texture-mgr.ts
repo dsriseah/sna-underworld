@@ -13,7 +13,7 @@
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetPaths } from '../game-mcp.ts';
+import { GetPaths } from '../game-state.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -25,7 +25,7 @@ const LOG = console.log.bind(this);
 const PR = ConsoleStyler('visual', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const DATAPACK_DIR = GetPaths().datapackPath;
-const DEFAULT_PNG = 'sprites/default.png';
+const DEF_SPR_NAME = GetPaths().defaultSpriteName;
 const TEX_LOADER = new THREE.TextureLoader();
 const TEXTURES = {};
 
@@ -69,8 +69,8 @@ function LoadAsync(texPath: string): Promise<THREE.Texture> {
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async function PreloadTextures() {
-  LOG(...PR('.. preloading', DEFAULT_PNG));
-  await LoadAsync(DEFAULT_PNG);
+  LOG(...PR('.. preloading', DEF_SPR_NAME));
+  await LoadAsync(DEF_SPR_NAME);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.DeclareModule('TextureMgr', {

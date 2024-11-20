@@ -6,24 +6,35 @@
   
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { OpReturn } from '@ursys/core';
 import * as TextureMgr from '../texture-mgr';
 import * as THREE from 'three';
+import { GetPaths } from '../../game-state.ts';
+
+/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+const DEFAULT_PNG = GetPaths().defaultSpriteName;
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SNA_Sprite extends THREE.Sprite {
   //
-  frac_width: number | null;
-  frac_height: number | null;
-  zoom: number;
   texture_path: string;
+  baseScale: THREE.Vector3; // the
+  tp_to_wu: number; // texturePixel to worldUnit ratio
+  zoom: number; // zoom level on top of tp_to_wu scale
+  mapSize: THREE.Vector2; // size of the texture map in pixels
   //
-  constructor(spriteMaterial: THREE.SpriteMaterial) {
+  constructor(spriteMaterial?: THREE.SpriteMaterial) {
+    if (spriteMaterial === undefined) {
+      const map = TextureMgr.Load(DEFAULT_PNG);
+      spriteMaterial = new THREE.SpriteMaterial({ map });
+      console.log('created sprite with default texture', DEFAULT_PNG);
+    }
     super(spriteMaterial);
-    this.frac_width = null;
-    this.frac_height = null;
-    this.zoom = 1;
+    this.tp_to_wu = 1; // 1 pixel = 1 world unit
+    this.zoom = 1; // no zoom
+    this.baseScale = new THREE.Vector3(1, 1, 1);
+    this.mapSize = new THREE.Vector2(0, 0);
   }
 
   /// AUTONOMOUS UPDATES ///
@@ -38,14 +49,17 @@ class SNA_Sprite extends THREE.Sprite {
     return this.material.map !== null;
   }
 
-  /** load a texture and set it as the sprite's texture */
+  /** asynchronously load a texture and set it as the sprite's texture,
+   *  which guarantees that the image map size is set before scaling */
   async setTexture(texPath: string) {
     const tex = await TextureMgr.LoadAsync(texPath);
     this.material.map = tex;
     this.material.needsUpdate = true;
     const ww = tex.image.width;
     const hh = tex.image.height;
-    this.setScaleXYZ(ww, hh, 1);
+    this.mapSize.set(ww, hh);
+    // set the scale of the sprite to match the texture size
+    this.setScale(ww, hh);
   }
 
   /// COLOR AND ALPHA ///
@@ -85,8 +99,14 @@ class SNA_Sprite extends THREE.Sprite {
   /// SIZING ///
   /// sizing a sprite is done by scaling the sprite material map
 
-  /** get original texture size in image dimensions */
-  getTextureSize(): { w: number; h: number } {
+  /** set the scale of the sprite using world units */
+  setScale(wux: number, hux: number) {
+    this.baseScale.set(wux, hux, 1);
+    this.scale.set(wux, hux, 1);
+  }
+
+  /** return texturemap size in pixels] */
+  getMapSize(): { w?: number; h?: number } {
     if (this._texLoaded()) {
       const { width, height } = this.material.map.image;
       return {
@@ -94,52 +114,64 @@ class SNA_Sprite extends THREE.Sprite {
         h: height
       };
     }
-    console.error('getTextureSize: material map not loaded');
-    return { w: 0, h: 0 };
+    console.error('sprite.material.map not yet loaded');
+    return {};
   }
-
-  /** return fractional size of sprite, which corresponds
-   *  to size in pixels based on the spritesheet dimensions */
-  getSize(): { w: number; h: number } {
-    if (this._texLoaded()) {
-      const fracWidth = this.frac_width || 1;
-      const fracHeight = this.frac_height || 1;
-      const dim = this.getTextureSize();
-      dim.w *= fracWidth;
-      dim.h *= fracHeight;
-      return dim;
-    }
-    console.error('getSize: material map not loaded');
+  /** return visible portion of texturemap in pixels, which
+   *  is a fraction of the total map size for spritesheets */
+  getVisibleMapSize(): { w?: number; h?: number } {
+    const { w: mw, h: mh } = this.getMapSize();
+    if (mw === undefined || mh === undefined) return {};
+    const { x: fracW, y: fracH } = this.material.map.repeat;
     return {
-      w: 0,
-      h: 0
+      w: mw * fracW,
+      h: mh * fracH
     };
   }
-
-  /** scale sprite by x,y,z factors */
-  setScaleXYZ(x: number, y: number, z: number) {
-    const s = this.zoom;
-    this.scale.set(s * x, s * y, z);
+  /** calculate the effective scale of the sprite based on the texture scale factor */
+  getEffectiveScale() {
+    const { w, h } = this.getVisibleMapSize();
+    if (w === undefined || h === undefined) return {};
+    return { w: w * this.tp_to_wu, h: h * this.tp_to_wu };
   }
 
-  /** return the scaling applied to the sprite */
-  getScaleXYZ(): OpReturn {
-    return { x: this.scale.x, y: this.scale.y, z: this.scale.z };
-  }
-
-  /** set the zoom level of the sprite */
-  setZoom(s: number): { w: number; h: number } {
-    this.zoom = s;
+  /** the texture scale factor is the ratio of texture pixels to world units,
+   *  useful when the image map itself is not to scale with the world units */
+  setTextureScaleFactor(tp_to_wu: number): void {
+    this.tp_to_wu = tp_to_wu;
     if (this._texLoaded()) {
-      const { w, h } = this.getSize();
-      this.setScaleXYZ(w, h, 1);
-      return { w, h };
+      this.applyTextureScaleFactor();
     }
-    console.error('setZoom: material map not loaded');
-    return { w: 0, h: 0 };
+  }
+  getTextureScaleFactor() {
+    return this.tp_to_wu;
   }
 
-  /** reutrn the current zoom level */
+  /** Set the scale of the sprite using the saved scale factor:
+   *  1. start with texture pixel dimensions of visible map portion
+   *  2. multiply by texture scale factor
+   *  result is the effective scale of the sprite in world units
+   */
+  applyTextureScaleFactor() {
+    const { w, h } = this.getEffectiveScale();
+    if (w === undefined || h === undefined) return {};
+    this.scale.set(w, h, 1);
+    this.baseScale.x = w; // save the adjusted unitScales
+    this.baseScale.y = h;
+    return { w, h };
+  }
+
+  /// ZOOM BASED ON BASE SCALE ///
+
+  /** Set the zoom level of the sprite based on scale and scale factor
+   *  The unitScale is preserved, and the sprite.scale is directly set
+   *  based on zoom * unitScale.
+   */
+  setZoom(zoom: number) {
+    this.zoom = zoom;
+    this.applyTextureScaleFactor();
+    this.scale.set(this.baseScale.x * zoom, this.baseScale.y * zoom, 1);
+  }
   getZoom() {
     return this.zoom;
   }

@@ -6,6 +6,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
+import { GetPaths } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 
@@ -23,9 +24,8 @@ const VISUALS: { [key: string]: THREE.Sprite } = {};
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
-  const defaultMap = new THREE.TextureLoader().load(
-    '_datapack/underworld/sprites/default.png'
-  );
+  const { defaultSpriteName } = GetPaths();
+  const defaultMap = new THREE.TextureLoader().load(defaultSpriteName);
   const defaultMat = new THREE.SpriteMaterial({ map: defaultMap });
   const defaultSprite = new THREE.Sprite(defaultMat);
   VISUALS.sprite = defaultSprite;

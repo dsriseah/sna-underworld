@@ -20,18 +20,16 @@ import { SNA_Starfield } from './visuals/vis-starfield.ts';
 const DBG = true;
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('visual', 'TagGreen');
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DEFAULT_PNG = 'sprites/default.png';
-const TEX_LOADER = new THREE.TextureLoader();
-const TEXTURES = {};
 
 /// API: SPRITES //////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** create a sprite with size set to texture dimensions */
 function MakeSprite(texPath?: string) {
-  if (typeof texPath !== 'string') texPath = DEFAULT_PNG;
-  const map = TextureMgr.Load(texPath);
-  const mat = new THREE.SpriteMaterial({ map });
+  let mat: THREE.SpriteMaterial;
+  if (typeof texPath === 'string') {
+    const map = TextureMgr.Load(texPath);
+    mat = new THREE.SpriteMaterial({ map });
+  }
   const spr = new SNA_Sprite(mat);
   return spr;
 }

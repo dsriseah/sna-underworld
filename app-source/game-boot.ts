@@ -51,7 +51,7 @@ SNA.Hook('LOAD_CONFIG', () => {});
 
   // call global config and then register Launcher, which will register all
   // other modules for the game side.
-  console.groupCollapsed('SNA STARTUP INFO');
+  console.group('SNA STARTUP INFO');
   SNA.GlobalConfig(cfg);
   SNA.RegisterComponent(MOD_Launcher);
   // After all modules are initialized, start the SNA lifecycle this will

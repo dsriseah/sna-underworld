@@ -15,6 +15,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { ConsoleStyler, CLASS } from '@ursys/core';
+import * as GSTATE from './game-state.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -26,20 +27,6 @@ const PR = ConsoleStyler('MCP', 'TagCyan');
 const DBG = true;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let GAME_TIMER: number; // game loop timer handle
-let FRAME_RATE = 15; // rate in frames per second
-let FRAME_DUR_MS = 1000 / FRAME_RATE; // duration of a frame in milliseconds
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const TIME_STATE = {
-  timeMS: 0, // increasing game time in milliseconds
-  elapsedMS: 0, // since last frame in milliseconds
-  frameRate: FRAME_RATE // current frame rate
-};
-const VIEW_STATE = {
-  worldUnits: 10 // number of world units per viewport
-};
-const PATHS = {
-  datapackPath: '_datapack/underworld/' // points to the game's data pack
-};
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { PhaseMachine } = CLASS;
 const PM = new PhaseMachine('SNA_GAME', {
@@ -74,16 +61,6 @@ const PM = new PhaseMachine('SNA_GAME', {
 /// HELPER METHODS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const { RunPhaseGroup, HookPhase } = PhaseMachine;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** Update game loop timers */
-function m_UpdateTimers() {
-  if (FRAME_RATE > 0) {
-    const oldTime = TIME_STATE.timeMS;
-    TIME_STATE.timeMS += FRAME_DUR_MS;
-    TIME_STATE.elapsedMS = TIME_STATE.timeMS - oldTime;
-    return TIME_STATE;
-  }
-}
 
 /// CONTROL METHODS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -97,22 +74,23 @@ async function Start() {
   // first run the INIT phase group
   await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
-  LOG(...PR(`${pre} tick rate set to ${FRAME_DUR_MS.toFixed(2)}ms`));
+  const { frameRate, framDurMS } = GSTATE.GetTimeState();
+  LOG(...PR(`${pre} tick rate set to ${framDurMS.toFixed(2)}ms`));
   GAME_TIMER = setInterval(async () => {
-    if (m_UpdateTimers().frameRate > 0) {
+    if (frameRate > 0) {
       await RunPhaseGroup('SNA_GAME/LOOP_BEGIN');
       await RunPhaseGroup('SNA_GAME/LOOP_CALC');
       await RunPhaseGroup('SNA_GAME/LOOP_THINK');
       await RunPhaseGroup('SNA_GAME/LOOP_RENDER');
     }
-  }, FRAME_DUR_MS);
-  LOG(...PR(`${pre} is running (${FRAME_RATE}fps)`));
+  }, framDurMS);
+  LOG(...PR(`${pre} is running (${frameRate}fps)`));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** API: Stop the game loop */
 async function Stop() {
   clearInterval(GAME_TIMER);
-  TIME_STATE.frameRate = 0;
+  GSTATE.SetFrameRate(0);
   await RunPhaseGroup('SNA_GAME/END');
   LOG(...PR('Stopped Game Loop'));
 }
@@ -123,31 +101,6 @@ async function Stop() {
 function HookGamePhase(phase: string, fn: Function) {
   HookPhase(`SNA_GAME/${phase}`, fn);
 }
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** Get current game loop state */
-function GetTimeState() {
-  return TIME_STATE;
-}
-function GameTimeMS() {
-  return TIME_STATE.timeMS;
-}
-function RealFrameIntervalMS() {
-  return TIME_STATE.elapsedMS;
-}
-function FrameIntervalMS() {
-  return FRAME_DUR_MS;
-}
-function FrameRate() {
-  return TIME_STATE.frameRate;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetViewState() {
-  return VIEW_STATE;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetPaths() {
-  return PATHS;
-}
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,13 +109,5 @@ export {
   Start, // start game loop
   Stop, // stop the game loop
   //
-  HookGamePhase, // (phase,fn)=>void
-  GetTimeState, // get current game loop state
-  GetViewState, // get current view state
-  GetPaths, // get current game paths
-  //
-  GameTimeMS, // current increasing gametime in milliseconds
-  FrameIntervalMS, // frame duration in milliseconds based on set frame rate
-  RealFrameIntervalMS, // actual frame duration in milliseconds
-  FrameRate // current frame rate
+  HookGamePhase // (phase,fn)=>void
 };

@@ -1,13 +1,30 @@
 /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
-  Viewport - This class manages a ThreeJS WebGLRenderer and the cameras that
-  render the game world at a particular size in the HTML web app. It provides a
-  world camera and a screen camera for rendering 3D and 2D scenes which are used
-  by the RENDERER module to draw its renderpasses comprised of various
-  THREE.Scene objects. It also provides utilities sizing the WebGL canvas to
-  the container element, and capturing the screen as a base64 encoded image.
+  Viewport - This class manages a ThreeJS WebGLRenderer with the cameras that
+  render the game world. 
+  
+  PIXEL-BASED COORDINATES - The Viewport uses pixel-based coordinates for...
+  * GLRenderer Coordinate Systems - webGL renderbuffer
+  * DOM Element Coordinates - webGL canvas
+  * World Coordinates - 3D world objects
+  * World Angular Coordinates - 3d world objects use Euler angles in radians
 
-  \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
+  CAMERAS - The Viewport manages several cameras
+  * Orthographic - background plate, UI overlay elements
+  * Perspective - 3D world elements
+
+  SPRITE-BASED COORDINATES - In ThreeJS, sprites are Point objects with a map.
+  * position - sprite.position(wX, wY)
+  * scale - sprite.setSize(wW, wH)
+  * rotation - sprite.material.map.rotation = wRadians
+  * spritesheets - sprite.material.map.repeat, sprite.material.map.origin
+  
+  WORLD SCALE - "world units" are approximately 1 pixel
+
+  See the following guide for more details about the above viewport properties
+  https://github.com/dsriseah/ursys/wiki/Guide%3A-CGI-Coordinate-Systems
+
+\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
 

@@ -8,7 +8,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-import { GetViewState } from '../../game-mcp';
+import { GetViewState } from '../../game-state';
 import * as THREE from 'three';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
