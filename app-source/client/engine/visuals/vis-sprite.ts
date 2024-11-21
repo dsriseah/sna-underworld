@@ -54,7 +54,7 @@ class SNA_Sprite extends THREE.Sprite {
   async setTexture(texPath: string) {
     const tex = await TextureMgr.LoadAsync(texPath);
     this.material.map = tex;
-    this.material.needsUpdate = true;
+    if (tex.image && tex.image.complete) this.material.needsUpdate = true;
     const ww = tex.image.width;
     const hh = tex.image.height;
     this.mapSize.set(ww, hh);
