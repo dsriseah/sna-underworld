@@ -22,6 +22,21 @@ tt {
 hr {
   margin: 2em 0;
 }
+a {
+  color: #55f; /* in rgb values: 85, 85, 255 */
+  /* all caps */
+  text-transform: uppercase;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 0.2em;
+  text-decoration-color: rgba(85, 85, 255, 0.25);
+  text-underline-offset: 0.3em;
+}
+a:visited {
+  color: #55f;
+}
 
 /** GAME AREA **/
 

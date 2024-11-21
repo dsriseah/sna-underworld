@@ -68,7 +68,7 @@ function GetHTMLLayout() {
 
 /// KEY STATE /////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const KEY_STATE = {
+let KEY_STATE = {
   pressed: new Set() // Set<key>
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -99,7 +99,6 @@ function AttachKeyListeners() {
     };
     if (DBG) console.log(`KEY DN: %c${key}`, css);
     m_UpdateStatus();
-    event.preventDefault();
   });
 
   document.addEventListener('keyup', event => {
