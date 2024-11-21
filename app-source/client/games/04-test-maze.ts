@@ -32,15 +32,18 @@ function SetupScene() {
 
   let starBright = [
     new THREE.Color(1.0, 1.0, 1.0),
-    new THREE.Color(0.5, 0.5, 0.7),
-    new THREE.Color(0.3, 0.3, 0.5)
+    new THREE.Color(1.0, 0.5, 0.5),
+    new THREE.Color(0.5, 1.0, 0.5),
+    new THREE.Color(0.5, 0.5, 1.0),
+    new THREE.Color(0.5, 0.5, 0.5)
   ];
   let starSpec = {
     parallax: 1
   };
   let starfields = [];
-  for (let i = 0; i < 3; i++) {
-    let sf = VisualMgr.MakeStarField(starBright[i], starSpec);
+  for (let i = 0; i < 5; i++) {
+    const sb = starBright[i].multiplyScalar(0.1 * starSpec.parallax);
+    let sf = VisualMgr.MakeStarField(sb, starSpec);
     starSpec.parallax *= 0.5;
     sf.position.set(0, 0, -100 - i);
     Renderer.RP_AddVisual('bg', sf);

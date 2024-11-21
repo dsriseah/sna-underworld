@@ -91,17 +91,18 @@ function m_GeneratePointsGeometry(color: THREE.Color) {
       colors[3 * k + 1] = color.g * intensity;
       colors[3 * k + 2] = color.b * intensity;
 
-      colors[3 * (k + off)] = color.r * intensity;
-      colors[3 * (k + off) + 1] = color.g * intensity;
-      colors[3 * (k + off) + 2] = color.b * intensity;
+      const koff = k + off;
+      colors[3 * koff] = color.r * intensity;
+      colors[3 * koff + 1] = color.g * intensity;
+      colors[3 * koff + 2] = color.b * intensity;
 
-      colors[3 * (k + off * 2)] = color.r * intensity;
-      colors[3 * (k + off * 2) + 1] = color.g * intensity;
-      colors[3 * (k + off * 2) + 2] = color.b * intensity;
+      colors[3 * (koff * 2)] = color.r * intensity;
+      colors[3 * (koff * 2) + 1] = color.g * intensity;
+      colors[3 * (koff * 2) + 2] = color.b * intensity;
 
-      colors[3 * (k + off * 3)] = color.r * intensity;
-      colors[3 * (k + off * 3) + 1] = color.g * intensity;
-      colors[3 * (k + off * 3) + 2] = color.b * intensity;
+      colors[3 * (koff * 3)] = color.r * intensity;
+      colors[3 * (koff * 3) + 1] = color.g * intensity;
+      colors[3 * (koff * 3) + 2] = color.b * intensity;
 
       k++;
     }
@@ -147,7 +148,7 @@ class SNA_Starfield extends THREE.Points {
     // const geo = m_GenerateDummyGeometry(color);
     const { worldUnits } = GetViewState();
     const mat = new THREE.PointsMaterial({
-      color: color || 0x888888,
+      color,
       size: STAR_SIZE / worldUnits
     });
     this.material = mat;

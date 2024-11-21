@@ -9,22 +9,22 @@ import * as VisualMgr from '../visual-mgr.ts';
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const MAZE_DEF = `
-X...............
+X.............XX
 ..X..XXX..X.....
-..X..XXX........
+..X..XXX....XX..
 ................
-..X....XXXXX....
-...........X....
-...XXXXX...X....
+..X....XXXXX.X..
+X...X......X.X..
+X..XXXXX...X...X
 ..........XX....
-XXXX..X.......X.
+XXXX..XX......X.
 ..............X.
-.....XXXXXX...X.
+..X..XXXXXX...X.
 .X......X.......
-.X......X.......
-.XX..X.XXX......
-................
-.......X........`;
+.X......X....X..
+.XX..X.XXX..XX..
+.............X..
+..X....X........`;
 
 /// HELPER FUNCTIONS //////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -78,8 +78,12 @@ class MazePlayer {
     for (let y = 0; y < this.dim_y; y++) {
       for (let x = 0; x < this.dim_x; x++) {
         if (this.maze[y][x] === 1) {
-          let wall = VisualMgr.MakeSprite();
-          wall.position.set(x - hx, y - hy, 0);
+          let wall = VisualMgr.MakeSprite('sprites/wall.png');
+          wall.material.map.repeat.set(0.5, 0.5);
+          wall.material.map.offset.set(0, 0.5);
+          const ss = 3;
+          wall.scale.set(ss, ss, 1);
+          wall.position.set((x - hx) * ss, (y - hy) * ss, 0);
           visuals.push(wall);
         }
       }
