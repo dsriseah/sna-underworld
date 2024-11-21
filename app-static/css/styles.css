@@ -123,3 +123,10 @@ footer p {
   padding: 0;
   margin: 0;
 }
+
+@media (min-width: 1110px) {
+  footer {
+    padding-left: 0;
+    transition: padding-left 1s ease;
+  }
+}
