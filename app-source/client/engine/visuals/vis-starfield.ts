@@ -43,8 +43,8 @@ function m_GenerateDummyGeometry(color: THREE.Color) {
  *  a more natural look. */
 function m_GeneratePointsGeometry(color: THREE.Color) {
   //
-  let pointsWide = STAR_DENSITY * 2;
-  let pointsHigh = STAR_DENSITY * 2;
+  let pointsWide = STAR_DENSITY * 4;
+  let pointsHigh = STAR_DENSITY * 4;
 
   let numPoints = pointsWide * pointsHigh;
   let off = numPoints / 4;
@@ -113,7 +113,7 @@ function m_GeneratePointsGeometry(color: THREE.Color) {
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   const { worldUnits } = GetViewState();
-  geometry.scale(worldUnits * 4, worldUnits * 4, 0);
+  geometry.scale(worldUnits * 10, worldUnits * 10, 0);
   return geometry;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,12 +143,13 @@ class SNA_Starfield extends THREE.Points {
   constructor(color: THREE.Color, opt?: { parallax: number }) {
     super();
     this.color = color;
-    this.parallax = opt?.parallax || 1;
+    const { parallax } = opt || { parallax: 0 };
+    this.parallax = parallax;
     const geo = m_GeneratePointsGeometry(color);
     // const geo = m_GenerateDummyGeometry(color);
     const { worldUnits } = GetViewState();
     const mat = new THREE.PointsMaterial({
-      color,
+      color: color || 0xffffff,
       size: STAR_SIZE / worldUnits
     });
     this.material = mat;
@@ -164,8 +165,10 @@ class SNA_Starfield extends THREE.Points {
 
   /** main method to set the position of the starfield */
   trackXYZ(x: number, y: number, z: number) {
-    let xx = u_WrapCoordinates(-x * this.parallax);
-    let yy = u_WrapCoordinates(-y * this.parallax);
+    let xx = -x * this.parallax;
+    let yy = -y * this.parallax;
+    if (Math.random() > 0.9) this.visible = false;
+    else this.visible = true;
     // console.log(`old:${x.toFixed(2)} new:${xx.toFixed(2)}`);
     this.position.x = xx;
     this.position.y = yy;

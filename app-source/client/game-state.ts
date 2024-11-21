@@ -23,11 +23,11 @@ import { ConsoleStyler, SNA } from '@ursys/core';
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const LOG = console.log.bind(this);
 const PR = ConsoleStyler('state', 'TagCyan');
-const DBG = true;
+const DBG = false;
 
 /// FRAMERATE STATE ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-let FRAME_RATE = 15; // rate in frames per second
+let FRAME_RATE = 60; // rate in frames per second
 let FRAME_DUR_MS = 1000 / FRAME_RATE; // duration of a frame in milliseconds
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const TIME_STATE = {
@@ -68,7 +68,9 @@ function GetHTMLLayout() {
 
 /// KEY STATE /////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const KEY_STATE = {};
+const KEY_STATE = {
+  pressed: new Set() // Set<key>
+};
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_UpdateStatus() {
   const css = 'padding:2px 6px;background-color:#333;color:#fff;';
@@ -77,6 +79,7 @@ function m_UpdateStatus() {
   const stat = `<span style="color:grey">KEYS:</span> ${keys.join(' ')}`;
   const keysElement = document.getElementById(ui_ctrl_keys);
   keysElement.innerHTML = stat;
+  KEY_STATE.pressed = new Set(keys);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function AttachKeyListeners() {
@@ -94,7 +97,7 @@ function AttachKeyListeners() {
       alt: event.altKey,
       meta: event.metaKey
     };
-    console.log(`KEY DN: %c${key}`, css);
+    if (DBG) console.log(`KEY DN: %c${key}`, css);
     m_UpdateStatus();
     event.preventDefault();
   });

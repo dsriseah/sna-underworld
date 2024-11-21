@@ -6,7 +6,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetViewState } from '../game-state.ts';
+import { GetViewState, GetKeyState, GetTimeState } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
@@ -38,13 +38,13 @@ function SetupScene() {
     new THREE.Color(0.5, 0.5, 0.5)
   ];
   let starSpec = {
-    parallax: 1
+    parallax: 0.1
   };
   let starfields = [];
   for (let i = 0; i < 5; i++) {
-    const sb = starBright[i].multiplyScalar(0.1 * starSpec.parallax);
+    const sb = starBright[i].multiplyScalar(0.1);
     let sf = VisualMgr.MakeStarField(sb, starSpec);
-    starSpec.parallax *= 0.5;
+    starSpec.parallax += 0.1;
     sf.position.set(0, 0, -100 - i);
     Renderer.RP_AddVisual('bg', sf);
     starfields.push(sf);
@@ -58,28 +58,79 @@ function SetupScene() {
   });
 
   let sprite = VisualMgr.MakeSprite('sprites/ship.png');
+  sprite.material.map.center.set(0.5, 0.5);
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
+
+  /** janky piece definition */
+  const ship = {
+    sprite,
+    s_max_impulse: 0.1, // max speed in world units
+    s_drag: 0.99, // moving friction
+    s_thrust_drag: 0.6, // thrust friction
+    s_impulse: 0, // impuse accumulator (degrades from friction)
+    s_max_speed: 0.2, // max speed in world units/second
+    speed: 0, // current speed
+
+    r_max_rate: 0.1, // max turning speed in radians
+    r_drag: 0.75, // turning friction
+    r_turning: 0, // turning accumulator (degrades from friction)
+    heading: 0 // current direction (set to rotation)
+  };
+  PLAYERS.ship = ship;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Prepare() {
-  LOG(...PR('Preparing "04 Test Maze Visual"'));
+  LOG(...PR('Preparing "05 Test Controls"'));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
-  const { sprite, starfields } = VISUALS;
+  const { starfields, sprite } = VISUALS;
+  const { ship } = PLAYERS;
 
-  sprite.changeHeadingBy(0.01);
-  const WU2 = WU / 2;
-  const ang = sprite.material.rotation;
-  // convert head to vector
-  const dx = Math.cos(ang);
-  const dy = Math.sin(ang);
-  // move the sprite
-  sprite.position.x += dx * 0.01;
-  sprite.position.y += dy * 0.01;
-  if (sprite.position.x > WU2) sprite.position.x = -WU2;
-  if (sprite.position.y > WU2) sprite.position.x = -WU2;
+  const { pressed } = GetKeyState();
+  const { frameRate } = GetTimeState();
+  const baseFrameRate = 15;
+  let frameScale = baseFrameRate / frameRate; // 0.25 at 60fps, 0.5 at 30fps
+
+  const S_IMPULSE = (0.01 * frameScale) / 2;
+  const R_TURNING = (0.1 * frameScale) / 2;
+
+  ship.s_impulse *= ship.s_thrust_drag;
+  if (pressed.has('W')) {
+    ship.s_impulse += S_IMPULSE;
+    if (ship.s_impulse > ship.s_max_impulse) ship.s_impulse = ship.s_max_impulse;
+  }
+  if (pressed.has('S')) {
+    ship.s_impulse -= S_IMPULSE / 4;
+    if (ship.s_impulse < -ship.s_max_impulse) ship.s_impulse = -ship.s_max_impulse;
+  }
+
+  ship.r_turning *= ship.r_drag;
+  if (pressed.has('A')) {
+    ship.r_turning += R_TURNING;
+    if (ship.r_turning > ship.r_max_rate) ship.r_turning = ship.r_max_rate;
+  }
+  if (pressed.has('D')) {
+    ship.r_turning -= R_TURNING;
+    if (ship.r_turning < -ship.r_max_rate) ship.r_turning = -ship.r_max_rate;
+  }
+
+  ship.speed += ship.s_impulse;
+  if (ship.speed > ship.s_max_speed) ship.speed = ship.s_max_speed;
+  if (ship.speed < -ship.s_max_speed) ship.speed = -ship.s_max_speed;
+  // update position
+  const dx = Math.cos(ship.heading);
+  const dy = Math.sin(ship.heading);
+  sprite.position.x += dx * ship.speed;
+  sprite.position.y += dy * ship.speed;
+  ship.speed *= ship.s_drag;
+  // update rotation
+  ship.heading += ship.r_turning;
+  if (ship.heading > Math.PI) ship.heading -= Math.PI * 2;
+  if (ship.heading < -Math.PI) ship.heading += Math.PI * 2;
+  sprite.material.map.rotation = ship.heading;
+
   // update tracking cameras
   Renderer.GetViewport().track(sprite.position);
   for (let sf of starfields) sf.track(sprite.position);
@@ -87,7 +138,7 @@ function Update() {
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('04-test-maze', {
+export default SNA.DeclareModule('05-test-controls', {
   PreHook: () => {
     HookGamePhase('CONSTRUCT', SetupScene);
     HookGamePhase('START', Prepare);

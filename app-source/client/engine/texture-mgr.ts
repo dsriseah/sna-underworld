@@ -80,6 +80,7 @@ function LoadAsync(texPath: string): Promise<THREE.Texture> {
     }
   });
 }
+
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async function PreloadTextures() {
