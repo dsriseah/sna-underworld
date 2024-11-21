@@ -20,13 +20,14 @@ tt {
   color: darkred;
 }
 hr {
-  margin: 2em 0;
+  margin: 1em 0;
 }
 a {
   color: #55f; /* in rgb values: 85, 85, 255 */
   /* all caps */
   text-transform: uppercase;
   text-decoration: none;
+  font-family: monospace;
 }
 a:hover {
   text-decoration: underline;
@@ -75,8 +76,10 @@ header.title p {
 
 /* HUD div styles */
 #ui-html {
+  box-sizing: border-box;
   background-color: lightgray;
   width: 100%;
+  padding: 0 1em 1em 1em;
 }
 
 /* control status area */
