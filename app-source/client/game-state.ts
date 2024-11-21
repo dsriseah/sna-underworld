@@ -14,7 +14,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { ConsoleStyler, CLASS } from '@ursys/core';
+import { ConsoleStyler, SNA } from '@ursys/core';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,6 +51,81 @@ const PATHS = {
   datapackPath: PACK_PATH,
   defaultSpriteName: DEF_SPR_NAME
 };
+
+/// HTML LAYOUT ////////////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+const main_container = 'main-gl';
+const ui_container = 'ui-html';
+const ui_ctrl_keys = 'keys';
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetHTMLLayout() {
+  return {
+    main_gl: main_container,
+    side_ui: ui_container,
+    ctrl_keys: ui_ctrl_keys
+  };
+}
+
+/// KEY STATE /////////////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+const KEY_STATE = {};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_UpdateStatus() {
+  const css = 'padding:2px 6px;background-color:#333;color:#fff;';
+  // get all pressed keys
+  const keys = Object.keys(KEY_STATE).filter(key => KEY_STATE[key].pressed);
+  const stat = `<span style="color:grey">KEYS:</span> ${keys.join(' ')}`;
+  const keysElement = document.getElementById(ui_ctrl_keys);
+  keysElement.innerHTML = stat;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function AttachKeyListeners() {
+  const main = document.getElementById(main_container);
+  const css = 'padding:2px 6px;background-color:#333;color:#fff;';
+
+  document.addEventListener('keydown', event => {
+    let key;
+    if (event.key === ' ') key = 'SPACE';
+    else key = event.key.toUpperCase();
+    KEY_STATE[key] = {
+      pressed: true,
+      shift: event.shiftKey,
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      meta: event.metaKey
+    };
+    console.log(`KEY DN: %c${key}`, css);
+    m_UpdateStatus();
+    event.preventDefault();
+  });
+
+  document.addEventListener('keyup', event => {
+    let key;
+    if (event.key === ' ') key = 'SPACE';
+    else key = event.key.toUpperCase();
+    KEY_STATE[key] = {
+      pressed: false,
+      shift: event.shiftKey,
+      ctrl: event.ctrlKey,
+      alt: event.altKey,
+      meta: event.metaKey
+    };
+    // console.log(`KEY UP: %c${key}`, css);
+    m_UpdateStatus();
+    event.preventDefault();
+  });
+
+  main.addEventListener('click', event => {
+    const { clientX, clientY } = event;
+    console.log(`CLICK (${clientX}, ${clientY})`);
+  });
+
+  main.focus();
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetKeyState() {
+  return KEY_STATE;
+}
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -93,15 +168,24 @@ function GetPaths() {
   return PATHS;
 }
 
-/// EXPORTS ///////////////////////////////////////////////////////////////////
+/// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/// game-stat is a special top-level module, so initialization is handled by
+/// game-mcp rather than using the SNA module system because that would result
+/// in a circular dependency.
+
+/// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
   // lifecycle
+  AttachKeyListeners,
   Update,
   // state objects
   GetTimeState,
   GetViewState,
   GetPaths,
+  GetHTMLLayout,
+  GetKeyState,
   // time acceessors
   GameTimeMS,
   RealFrameIntervalMS,

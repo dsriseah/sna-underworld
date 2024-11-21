@@ -65,7 +65,9 @@ const { RunPhaseGroup, HookPhase } = PhaseMachine;
 /// CONTROL METHODS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** used for data structure initialization */
-async function Init() {}
+async function Init() {
+  GSTATE.AttachKeyListeners();
+}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** API: Start the game loop */
 async function Start() {
