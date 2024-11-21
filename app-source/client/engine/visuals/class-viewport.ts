@@ -98,12 +98,17 @@ class Viewport {
     this.containerID = containerID;
 
     // create THREEJS renderer
+    let gl = new THREE.WebGLRenderer();
+    gl = new THREE.WebGLRenderer();
+    gl.setClearColor(0x000000, 1);
+    gl.outputColorSpace = 'srgb';
+    gl.autoClear = false;
+    this.threeGL = gl;
+
+    // attach the renderer to the container
     const container = document.getElementById(containerID);
     if (container === null) throw Error(`container ${containerID} not found`);
     this.container = container;
-    this.threeGL = new THREE.WebGLRenderer();
-    this.threeGL.setClearColor(0x000000, 1);
-    this.threeGL.autoClear = false;
     this.container.appendChild(this.threeGL.domElement);
 
     // size the renderer

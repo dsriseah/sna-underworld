@@ -32,18 +32,32 @@ const TEXTURES = {};
 /// API METHODS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** return a previously loaded texture */
-function Get(texPath: string): THREE.Texture {
-  return TEXTURES[texPath];
+function GetClone(texPath: string): THREE.Texture {
+  const tex = TEXTURES[texPath];
+  if (tex) {
+    const clone = tex.clone();
+    clone.colorSpace = 'srgb';
+    return clone;
+  }
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** return the texture object from the cache */
+function GetTexture(texPath: string): THREE.Texture {
+  const tex = TEXTURES[texPath];
+  if (tex) return tex.clone();
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** load a texture and return a valid data structure even though the asset
- *  may still be loading. */
-function Load(texPath: string): THREE.Texture {
-  let texture = Get(texPath);
+ *  may still be loading. By default, a clone of the texture is returned
+ *  so you can change .repeat and .offset independently */
+function Load(texPath: string, opt?): THREE.Texture {
+  const { clone } = opt || { clone: true };
+  let texture = clone ? GetClone(texPath) : GetTexture(texPath);
   if (texture) return texture;
   texture = TEX_LOADER.load(DATAPACK_DIR + texPath);
   if (texture) {
     TEXTURES[texPath] = texture;
+    texture.colorSpace = 'srgb';
     return texture;
   }
   throw Error(`texture ${texPath} not found`);
@@ -51,7 +65,7 @@ function Load(texPath: string): THREE.Texture {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function LoadAsync(texPath: string): Promise<THREE.Texture> {
   return new Promise((resolve, reject) => {
-    let texture = Get(texPath);
+    let texture = GetClone(texPath);
     if (texture) resolve(texture);
     else {
       TEX_LOADER.load(
@@ -82,7 +96,7 @@ export default SNA.DeclareModule('TextureMgr', {
 /// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
-  Get, // get a texture from the cache
+  GetClone, // get a texture from the cache
   Load, // load a texture and return its map immediately
   LoadAsync // load a texture and promise to return its map
 };
