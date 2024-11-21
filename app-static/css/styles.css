@@ -115,6 +115,7 @@ footer {
   max-width: 1100px;
   margin: 0 auto;
   padding-left: 0.3em;
+  transition: padding-left 0.2s ease;
   padding-top: 0.2em;
 }
 footer p {
@@ -127,6 +128,6 @@ footer p {
 @media (min-width: 1110px) {
   footer {
     padding-left: 0;
-    transition: padding-left 1s ease;
+    transition: padding-left 0.75s ease;
   }
 }
