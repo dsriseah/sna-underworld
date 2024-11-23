@@ -23,3 +23,4 @@ cd sna-underworld
 npm ci
 npm run dev
 ```
+After that, browse to `http://localhost:8080` and explore. Open the Javascript console for debug messages. NOTE: The console is formatted for Chrome-based browsers and may look weird on Firefox or Safari.
