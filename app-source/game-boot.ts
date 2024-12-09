@@ -23,7 +23,7 @@ const PR = ConsoleStyler('boot', 'TagGray');
 
 /// LIFECYCLE HOOKS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SNA.Hook('LOAD_CONFIG', () => {});
+SNA.HookAppPhase('LOAD_CONFIG', () => {});
 
 /// RUNTIME ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,8 +52,8 @@ SNA.Hook('LOAD_CONFIG', () => {});
   // call global config and then register Launcher, which will register all
   // other modules for the game side.
   console.group('SNA STARTUP INFO');
-  SNA.GlobalConfig(cfg);
-  SNA.RegisterComponent(MOD_Launcher);
+  SNA.SetAppConfig(cfg);
+  SNA.UseComponent(MOD_Launcher);
   // After all modules are initialized, start the SNA lifecycle this will
   // call PreConfig() and PreHook() all all registered modules.
   await SNA.Start();

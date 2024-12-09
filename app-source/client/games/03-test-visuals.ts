@@ -71,7 +71,7 @@ function Update() {
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('03-test-visuals', {
+export default SNA.NewComponent('03-test-visuals', {
   PreHook: () => {
     HookGamePhase('CONSTRUCT', SetupScene);
     HookGamePhase('START', Prepare);

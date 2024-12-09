@@ -88,7 +88,7 @@ async function PreloadTextures() {
   await LoadAsync(DEF_SPR_NAME);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('TextureMgr', {
+export default SNA.NewComponent('TextureMgr', {
   PreHook: () => {
     HookGamePhase('LOAD_ASSETS', PreloadTextures);
   }

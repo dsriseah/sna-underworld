@@ -37,12 +37,12 @@ const LOG = console.log.bind(this);
 /// HELPER METHODS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook for SNA to add modules to the game using the passed function */
-function SNA_AddModule({ f_AddModule }) {
+function SNA_AddComponent({ f_AddComponent }) {
   // register all components before SNA.Start() is called
-  f_AddModule(MOD_RENDER);
-  f_AddModule(MOD_TEXTURE);
-  f_AddModule(MOD_VISUAL);
-  f_AddModule(GAME);
+  f_AddComponent(MOD_RENDER);
+  f_AddComponent(MOD_TEXTURE);
+  f_AddComponent(MOD_VISUAL);
+  f_AddComponent(GAME);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook for SNA to provide a configuration object that's passed on
@@ -58,19 +58,19 @@ function SNA_PreConfig(cfg: DataObj) {
  *  which is for the GAME LIFECYCLE phases! */
 function SNA_PreHook() {
   //
-  SNA.Hook('APP_CONFIG', async () => {
+  SNA.HookAppPhase('APP_CONFIG', async () => {
     await MCP.Init();
   });
   //
-  SNA.Hook('APP_RUN', async () => {
+  SNA.HookAppPhase('APP_RUN', async () => {
     await MCP.Start();
   });
 }
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('Launcher', {
-  AddModule: SNA_AddModule,
+export default SNA.NewComponent('Launcher', {
+  AddComponent: SNA_AddComponent,
   PreConfig: SNA_PreConfig,
   PreHook: SNA_PreHook
 });

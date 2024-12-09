@@ -51,11 +51,11 @@ const PM = new PhaseMachine('SNA_GAME', {
     'EXECUTE' // deferred actions, if any
   ],
   LOOP_RENDER: [
+    'PLAY_SOUND', // play sound effects
     'DRAW_WORLD', // threejs draw world
-    'DRAW_UI', // draw UI elements over world
-    'PLAY_SOUND' // play sound effects
+    'DRAW_UI' // draw UI elements over world
   ],
-  END: []
+  END: [] // game over
 });
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////

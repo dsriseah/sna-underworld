@@ -68,7 +68,7 @@ function VisualUpdates() {
   // update all frame-based autonomous visual elements
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-export default SNA.DeclareModule('VisualMgr', {
+export default SNA.NewComponent('VisualMgr', {
   PreHook: () => {
     HookGamePhase('UPDATE', VisualUpdates);
   }
