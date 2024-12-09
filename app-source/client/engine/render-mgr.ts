@@ -131,9 +131,7 @@ function Initialize() {
   };
   // initialize viewport
   const main = document.getElementById('main-gl');
-  const width = main.clientWidth;
-  const height = main.clientHeight;
-  VIEWPORT.initRenderer({ width, height, containerID: 'main-gl' });
+  VIEWPORT.initRenderer('main-gl');
   const { worldUnits } = GetViewState(); // number of world units visible
   VIEWPORT.sizeWorldToViewport(worldUnits);
   VIEWPORT.initializeCameras();

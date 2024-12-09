@@ -30,7 +30,14 @@ import * as THREE from 'three';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-type ViewportMode = 'fixed' | 'scaled' | 'fluid';
+const VIEWPORT_MODES = ['container', 'fixed', 'scaled', 'fluid'] as const;
+type VPMode = (typeof VIEWPORT_MODES)[number];
+type VPDim = {
+  width: SPX;
+  height: SPX;
+  aspect: number;
+};
+type SPX = number; // screen pixels
 type ScreenCapFormat = 'jpg' | 'png';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
@@ -66,9 +73,9 @@ function m_GetFramingDistance(cam3D, fWidth, fHeight, safety?) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class Viewport {
   name: string; // name of the viewport
-  mode: ViewportMode; // fixed, scaled, fluid
-  width: number; // width in pixels
-  height: number; // height in pixels
+  mode: VPMode; // viewport mode
+  width: SPX; // width in pixels
+  height: SPX; // height in pixels
   aspect: number; // aspect ratio
   containerID: string; // container element
   container: HTMLElement; // container element
@@ -87,15 +94,11 @@ class Viewport {
 
   constructor() {
     this.name = 'viewport' + viewport_count++;
-    this.mode = 'fixed';
   }
 
   /** Step 1. Initialize the WebGL surface and size containers exactly */
-  initRenderer({ width, height, containerID }): void {
-    this.width = width;
-    this.height = height;
-    this.aspect = width / height;
-    this.containerID = containerID;
+  initRenderer(domID: string): void {
+    this.containerID = domID;
 
     // create THREEJS renderer
     let gl = new THREE.WebGLRenderer();
@@ -106,15 +109,42 @@ class Viewport {
     this.threeGL = gl;
 
     // attach the renderer to the container
-    const container = document.getElementById(containerID);
-    if (container === null) throw Error(`container ${containerID} not found`);
+    const container = document.getElementById(domID);
+    if (container === null) throw Error(`container ${domID} not found`);
     this.container = container;
-    this.container.appendChild(this.threeGL.domElement);
 
     // size the renderer
-    this.threeGL.setSize(this.width, this.height);
-    this.container.style.width = this.width + 'px';
-    this.container.style.height = this.height + 'px';
+    this.container.appendChild(this.threeGL.domElement);
+
+    // default set viewport mode to "container"
+    this._sizeGL('container');
+  }
+
+  /** Viewport mode is how the viewport scales the renderer to the container */
+  private _sizeGL(mode: VPMode, dim?: VPDim): void {
+    const { width, height, aspect } = dim || {};
+    if (mode === 'container') {
+      this.width = this.container.clientWidth;
+      this.height = this.container.clientHeight;
+      this.aspect = this.width / this.height;
+      this.threeGL.setSize(this.width, this.height);
+    } else if (mode === 'fixed') {
+      throw Error('fixed mode not implemented');
+      // properly-sized to begin with which is the case in a fluid layout.
+      this.container.style.width = this.width + 'px';
+      this.container.style.height = this.height + 'px';
+    } else if (mode === 'scaled') {
+      throw Error('scaled mode not implemented');
+      this.container.style.width = this.width + 'px';
+      this.container.style.height = this.height + 'px';
+    } else if (mode === 'fluid') {
+      throw Error('fluid mode not implemented');
+      this.container.style.width = this.width + 'px';
+      this.container.style.height = this.height + 'px';
+    } else {
+      throw Error(`Invalid viewport mode: ${mode}`);
+    }
+    this.mode = mode;
   }
 
   /** Step 2. Set the World-to-Renderer mapping with "WorldUnits", which specify
