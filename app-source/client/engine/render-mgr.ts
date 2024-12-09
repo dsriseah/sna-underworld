@@ -153,6 +153,25 @@ function DrawWorld() {
   // check for screen capture request
   m_CheckCaptureScreen();
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** called during GamePhase DRAW_UI */
+function DrawViewportStatus() {
+  // update viewport status
+  let out;
+  const vpinfo = VIEWPORT.info();
+  const { camMode, camPos, visWorld } = vpinfo;
+  const camx = camPos.x;
+  const camy = camPos.y;
+  out = `${camx.toFixed(2)}, ${camy.toFixed(2)}`;
+  const cam = `<span style="color:grey">CAMERA:</span> ${out}<br>`;
+  const { hw, hh } = visWorld;
+  const _ = n => n.toFixed(2);
+  const range = `${_(camx - hw)}, ${_(camy - hh)} - ${_(camx + hw)}, ${_(camy + hh)}`;
+  const wrd = `<span style="color:grey">WORLD&nbsp;:</span> ${range}<range>`;
+  //
+  const infoElement = document.getElementById('info');
+  infoElement.innerHTML = cam + wrd;
+}
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -163,6 +182,9 @@ export default SNA.NewComponent('RenderMgr', {
     });
     HookGamePhase('DRAW_WORLD', () => {
       DrawWorld();
+    });
+    HookGamePhase('DRAW_UI', () => {
+      DrawViewportStatus();
     });
   }
 });

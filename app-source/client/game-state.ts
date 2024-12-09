@@ -72,7 +72,7 @@ let KEY_STATE = {
   pressed: new Set() // Set<key>
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function m_UpdateStatus() {
+function m_UpdateConsole() {
   const css = 'padding:2px 6px;background-color:#333;color:#fff;';
   // get all pressed keys
   const keys = Object.keys(KEY_STATE).filter(key => KEY_STATE[key].pressed);
@@ -98,7 +98,7 @@ function AttachKeyListeners() {
       meta: event.metaKey
     };
     if (DBG) console.log(`KEY DN: %c${key}`, css);
-    m_UpdateStatus();
+    m_UpdateConsole();
   });
 
   document.addEventListener('keyup', event => {
@@ -113,13 +113,8 @@ function AttachKeyListeners() {
       meta: event.metaKey
     };
     // console.log(`KEY UP: %c${key}`, css);
-    m_UpdateStatus();
+    m_UpdateConsole();
     event.preventDefault();
-  });
-
-  main.addEventListener('click', event => {
-    const { clientX, clientY } = event;
-    console.log(`CLICK (${clientX}, ${clientY})`);
   });
 
   main.focus();

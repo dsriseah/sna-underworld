@@ -68,6 +68,31 @@ function m_GetFramingDistance(cam3D, fWidth, fHeight, safety?) {
   // console.log("frame",fWidth*2+'x'+fHeight*2,"D="+d.toFixed(2));
   return d;
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_GetWorldUnitsVisible(vp: Viewport) {
+  const cam = vp.camWORLD;
+  if (cam instanceof THREE.PerspectiveCamera) {
+    let hw = cam.aspect * Math.tan((cam.fov * Math.PI) / 360);
+    let hh = Math.tan((cam.fov * Math.PI) / 360);
+    let wu = Math.max(hw, hh) * 2;
+    return { hw, hh, wu };
+  } else if (cam instanceof THREE.OrthographicCamera) {
+    let hw = cam.right - cam.left;
+    let hh = cam.top - cam.bottom;
+    let wu = Math.max(hw, hh);
+    return { hw, hh, wu };
+  }
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_ScreenToWorld(vp: Viewport, clientX: number, clientY: number) {
+  let hw = vp.width / 2;
+  let hh = vp.height / 2;
+  let cx = vp.camWORLD.position.x;
+  let cy = vp.camWORLD.position.y;
+  let x = (clientX - hw) * vp.worldScale;
+  let y = (clientY - hh) * vp.worldScale;
+  return { worldX: x + cx, worldY: y + cy };
+}
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,9 +116,11 @@ class Viewport {
   cam3D: THREE.PerspectiveCamera; // ...3d perspective (world coords)
   camSCREEN: THREE.OrthographicCamera; // screen (pixel coords)
   pickers: any; // subscribes to mouse click events
+  mousedown: boolean; // mouse button state
 
   constructor() {
     this.name = 'viewport' + viewport_count++;
+    this.mousedown = false;
   }
 
   /** Step 1. Initialize the WebGL surface and size containers exactly */
@@ -118,6 +145,12 @@ class Viewport {
 
     // default set viewport mode to "container"
     this._sizeGL('container');
+
+    // add event listeners
+    const cgl = this.threeGL.domElement;
+    cgl.addEventListener('mousedown', evt => this._handlePress(this, evt));
+    cgl.addEventListener('mouseup', evt => this._handleRelease(this, evt));
+    cgl.addEventListener('mousemove', evt => this._handleMove(this, evt));
   }
 
   /** Viewport mode is how the viewport scales the renderer to the container */
@@ -160,6 +193,14 @@ class Viewport {
     this.worldUnits = wu;
     this.worldScale = Math.max(wu / this.width, wu / this.height);
     this.worldAspect = this.width / this.height;
+    console.log(
+      'world units',
+      wu,
+      'worldscale',
+      this.worldScale,
+      'worldAspect',
+      this.worldAspect
+    );
   }
 
   /** Step 3. Create all the cameras */
@@ -299,6 +340,35 @@ class Viewport {
     this.cam3D.updateProjectionMatrix();
   }
 
+  /// PICKERS ///
+
+  /** handlers execute from within document element context */
+  _handlePress(vp: Viewport, event: MouseEvent): void {
+    const { clientX, clientY } = event; // screen coordinates within browser
+    const { offsetX, offsetY } = event; // screen coordinates within canvas
+    const { worldX, worldY } = m_ScreenToWorld(vp, offsetX, offsetY);
+    console.log(
+      `DN: ${worldX.toFixed(2)}, ${worldY.toFixed(2)} (${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`
+    );
+    this.mousedown = true;
+  }
+  _handleRelease(vp: Viewport, event: MouseEvent): void {
+    return;
+    const { clientX, clientY } = event;
+    // convert to world coordinates
+    const { worldX, worldY } = m_ScreenToWorld(vp, clientX, clientY);
+    console.log(`UP: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
+    this.mousedown = false;
+  }
+  _handleMove(vp: Viewport, event: MouseEvent): void {
+    return;
+    if (this.mousedown) {
+      const { clientX, clientY } = event;
+      const { worldX, worldY } = m_ScreenToWorld(vp, clientX, clientY);
+      console.log(`MV: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
+    }
+  }
+
   /// WORLD CAMERA UTILITIES ///
 
   /** set the world origin for the world cameras so the
@@ -404,6 +474,21 @@ class Viewport {
   captureScreen(fmt: ScreenCapFormat = 'png'): string {
     let img = this.threeGL.domElement.toDataURL(fmt);
     return img;
+  }
+
+  /// VIEWPORT DEBUGGING ///
+
+  /** return viewport information */
+  info() {
+    const cp = this.camWORLD.position;
+    const scrn = this.camSCREEN.position;
+    const visWorld = m_GetWorldUnitsVisible(this);
+    return {
+      camMode: this.worldCam() === this.cam3D ? '3D' : '2D',
+      camPos: { x: cp.x, y: cp.y, z: cp.z },
+      visWorld,
+      scrnPos: { x: scrn.x, y: scrn.y, z: scrn.z }
+    };
   }
 }
 
