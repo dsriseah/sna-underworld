@@ -19,7 +19,7 @@ const PR = ConsoleStyler('starfield', 'TagGreen');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const STAR_SIZE = 1; // based on the world units visible in viewport
+const STAR_SIZE = 10; // based on the world units visible in viewport
 const STAR_DENSITY = 10; // number of stars per world unit
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////

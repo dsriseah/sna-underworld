@@ -31,7 +31,6 @@ class SNA_Sprite extends THREE.Sprite {
       console.log('created sprite with default texture', DEFAULT_PNG);
     }
     super(spriteMaterial);
-    this.tp_to_wu = 1; // 1 pixel = 1 world unit
     this.zoom = 1; // no zoom
     this.baseScale = new THREE.Vector3(1, 1, 1);
     this.mapSize = new THREE.Vector2(0, 0);
@@ -100,7 +99,8 @@ class SNA_Sprite extends THREE.Sprite {
   /// sizing a sprite is done by scaling the sprite material map
 
   /** set the scale of the sprite using world units */
-  setScale(wux: number, hux: number) {
+  setScale(wux: number, hux?: number) {
+    if (hux === undefined) hux = wux;
     this.baseScale.set(wux, hux, 1);
     this.scale.set(wux, hux, 1);
   }

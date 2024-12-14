@@ -58,6 +58,7 @@ function SetupScene() {
   });
 
   let sprite = VisualMgr.MakeSprite('sprites/ship.png');
+  sprite.setScale(10);
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
 }

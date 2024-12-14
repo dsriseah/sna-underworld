@@ -24,23 +24,23 @@ const VISUALS: { [key: string]: THREE.Sprite } = {};
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
-  const { defaultSpriteName } = GetPaths();
-  const defaultMap = new THREE.TextureLoader().load(defaultSpriteName);
+  const { datapackPath, defaultSpriteName } = GetPaths();
+  const defaultMap = new THREE.TextureLoader().load(datapackPath + defaultSpriteName);
   const defaultMat = new THREE.SpriteMaterial({ map: defaultMap });
   const defaultSprite = new THREE.Sprite(defaultMat);
+  defaultSprite.scale.set(10, 10, 1);
   VISUALS.sprite = defaultSprite;
   Renderer.RP_AddVisual('world', defaultSprite);
 
-  const shipMap = new THREE.TextureLoader().load(
-    '_datapack/underworld/sprites/crixa.png'
-  );
+  const shipMap = new THREE.TextureLoader().load(datapackPath + 'sprites/ship.png');
   const shipMat = new THREE.SpriteMaterial({ map: shipMap });
   const shipSprite = new THREE.Sprite(shipMat);
   VISUALS.ship = shipSprite;
-  shipSprite.translateY(1);
+  shipSprite.translateY(20);
+  shipSprite.scale.set(10, 10, 1);
   Renderer.RP_AddVisual('world', shipSprite);
 
-  Renderer.RP_SetBackgroundImage('_datapack/underworld/bg/discord.png');
+  // Renderer.RP_SetBackgroundImage('bg/discord.png');
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function Update() {
@@ -49,8 +49,8 @@ function Update() {
   ship.material.rotation -= 0.01;
   const VP = Renderer.GetViewport();
   const cam = VP.worldCam();
-  cam.position.x += 0.01;
-  if (cam.position.x > 1) cam.position.x = -1;
+  cam.position.x += 0.1;
+  if (cam.position.x > 1) cam.position.x = -10;
   VP.track(cam.position);
 }
 

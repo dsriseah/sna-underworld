@@ -24,7 +24,7 @@ const VISUALS: { [key: string]: THREE.Mesh } = {};
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
   // dummy test code
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const geometry = new THREE.BoxGeometry(25, 25, 25);
   const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   const cube = new THREE.Mesh(geometry, material);
   VISUALS.cube = cube;

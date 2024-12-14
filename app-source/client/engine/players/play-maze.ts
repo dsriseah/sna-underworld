@@ -81,7 +81,7 @@ class MazePlayer {
           let wall = VisualMgr.MakeSprite('sprites/wall.png');
           wall.material.map.repeat.set(0.5, 0.5);
           wall.material.map.offset.set(0, 0.5);
-          const ss = 3;
+          const ss = 25; // 25 world units per wall, 1/4 of the viewport
           wall.scale.set(ss, ss, 1);
           wall.position.set((x - hx) * ss, (y - hy) * ss, 0);
           visuals.push(wall);

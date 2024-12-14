@@ -5,7 +5,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import { SNA, ConsoleStyler } from '@ursys/core';
-import { HookGamePhase, GetViewState } from '../game-mcp.ts';
+import { HookGamePhase } from '../game-mcp.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
@@ -47,6 +47,7 @@ function SetupScene() {
   VISUALS.starfields = starfields;
 
   let sprite = VisualMgr.MakeSprite();
+  sprite.setScale(10);
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
 }

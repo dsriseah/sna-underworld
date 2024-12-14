@@ -59,17 +59,18 @@ function SetupScene() {
 
   let sprite = VisualMgr.MakeSprite('sprites/ship.png');
   sprite.material.map.center.set(0.5, 0.5);
+  sprite.setScale(10); // 10 world units = 1/10th of the viewport
   Renderer.RP_AddVisual('world', sprite);
   VISUALS.sprite = sprite;
 
   /** janky piece definition */
   const ship = {
     sprite,
-    s_max_impulse: 0.1, // max speed in world units
+    s_max_impulse: 1, // max speed in world units
     s_drag: 0.99, // moving friction
     s_thrust_drag: 0.6, // thrust friction
     s_impulse: 0, // impuse accumulator (degrades from friction)
-    s_max_speed: 0.2, // max speed in world units/second
+    s_max_speed: 1.5, // max speed in world units/second
     speed: 0, // current speed
 
     r_max_rate: 0.1, // max turning speed in radians
@@ -93,7 +94,7 @@ function Update() {
   const baseFrameRate = 15;
   let frameScale = baseFrameRate / frameRate; // 0.25 at 60fps, 0.5 at 30fps
 
-  const S_IMPULSE = (0.01 * frameScale) / 2;
+  const S_IMPULSE = (0.1 * frameScale) / 2;
   const R_TURNING = (0.1 * frameScale) / 2;
 
   ship.s_impulse *= ship.s_thrust_drag;

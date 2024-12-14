@@ -40,7 +40,7 @@ const TIME_STATE = {
 /// VIEW STATE ////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const VIEW_STATE = {
-  worldUnits: 10 // number of world units per viewport
+  worldUnits: 100 // number of world units per viewport
 };
 
 /// PATHS /////////////////////////////////////////////////////////////////////
