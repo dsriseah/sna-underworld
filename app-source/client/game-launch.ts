@@ -15,6 +15,7 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import * as MCP from './game-mcp.ts';
+import SYS_SCREEN from './engine/system-screen.ts';
 import MOD_RENDER from './engine/render-mgr.ts';
 import MOD_TEXTURE from './engine/texture-mgr.ts';
 import MOD_VISUAL from './engine/visual-mgr.ts';
@@ -39,6 +40,7 @@ const LOG = console.log.bind(this);
 /** Hook for SNA to add modules to the game using the passed function */
 function SNA_AddComponent({ f_AddComponent }) {
   // register all components before SNA.Start() is called
+  f_AddComponent(SYS_SCREEN);
   f_AddComponent(MOD_RENDER);
   f_AddComponent(MOD_TEXTURE);
   f_AddComponent(MOD_VISUAL);

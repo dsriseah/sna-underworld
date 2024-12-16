@@ -9,6 +9,7 @@
 
 import * as THREE from 'three';
 import type { Viewport } from './class-viewport.ts';
+import { AddViewportStatus } from '../system-screen.ts';
 
 /// CAMERA UTILITIES //////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,6 +34,8 @@ function GetFramingDistance(cam3D, fWidth, fHeight, safety?) {
   return d;
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** given a viewport, calculate the world units visible based on the
+ *  current world camera's fov and aspect ratio */
 function GetWorldUnitsVisible(vp: Viewport) {
   const cam = vp.camWORLD;
   if (cam instanceof THREE.PerspectiveCamera) {
@@ -50,26 +53,21 @@ function GetWorldUnitsVisible(vp: Viewport) {
 
 /// COORDINATE UTILITIES //////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** Convert screen coordinates to world coordinates */
 function ScreenToWorld(vp: Viewport, clientX: number, clientY: number) {
-  let hw = vp.width / 2;
-  let hh = vp.height / 2;
-  let cx = vp.camWORLD.position.x;
-  let cy = vp.camWORLD.position.y;
-  let x = (clientX - hw) * vp.worldScale;
-  let y = (clientY - hh) * vp.worldScale;
-  return { worldX: x + cx, worldY: y + cy };
+  let wx = clientX * vp.worldScale;
+  let wy = clientY * vp.worldScale;
+  return [wx, wy];
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** Convert world coordinates to screen coordinates */
 function WorldToScreen(vp: Viewport, worldX: number, worldY: number) {
-  let hw = vp.width / 2;
-  let hh = vp.height / 2;
-  let cx = vp.camWORLD.position.x;
-  let cy = vp.camWORLD.position.y;
-  let x = (worldX - cx) / vp.worldScale + hw;
-  let y = (worldY - cy) / vp.worldScale + hh;
-  return { screenX: x, screenY: y };
+  let cx = worldX / vp.worldScale;
+  let cy = worldY / vp.worldScale;
+  return [cx, cy];
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** UNTESTED method to get the visual clicked by the user */
 function GetClickedVisual(
   vp: Viewport,
   scene: THREE.Scene,
@@ -84,10 +82,17 @@ function GetClickedVisual(
   const intersects = raycaster.intersectObjects(scene.children, true);
   return intersects.map(i => i.object);
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** catch-all function for fixing number formatting */
+function _d(n: number, places = 2) {
+  if (n >= 0) return `+${n.toFixed(places)}`;
+  return n.toFixed(places);
+}
 
 /// EXPORTS ///////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
+  _d, // (n: number) => string (formatted number)
   GetFramingDistance, // (cam3D, fWidth, fHeight, safety?) => distance
   GetWorldUnitsVisible, // (vp: Viewport) => {hw, hh, wu}
   ScreenToWorld, // (vp, clientX, clientY) => {worldX, worldY}

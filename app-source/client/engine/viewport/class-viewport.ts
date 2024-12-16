@@ -30,7 +30,8 @@ import * as THREE from 'three';
 import {
   GetFramingDistance,
   GetWorldUnitsVisible,
-  ScreenToWorld
+  ScreenToWorld,
+  _d
 } from './vp-util.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -105,9 +106,9 @@ class Viewport {
 
     // add event listeners
     const cgl = this.threeGL.domElement;
-    cgl.addEventListener('mousedown', evt => this._handlePress(this, evt));
-    cgl.addEventListener('mouseup', evt => this._handleRelease(this, evt));
-    cgl.addEventListener('mousemove', evt => this._handleMove(this, evt));
+    cgl.addEventListener('mousedown', evt => this._handlePress(evt));
+    cgl.addEventListener('mouseup', evt => this._handleRelease(evt));
+    cgl.addEventListener('mousemove', evt => this._handleMove(evt));
   }
 
   /** Viewport mode is how the viewport scales the renderer to the container */
@@ -150,14 +151,6 @@ class Viewport {
     this.worldUnits = wu;
     this.worldScale = Math.max(wu / this.width, wu / this.height);
     this.worldAspect = this.width / this.height;
-    console.log(
-      'world units',
-      wu,
-      'worldscale',
-      this.worldScale,
-      'worldAspect',
-      this.worldAspect
-    );
   }
 
   /** Step 3. Create all the cameras */
@@ -293,30 +286,20 @@ class Viewport {
   /// PICKERS ///
 
   /** handlers execute from within document element context */
-  _handlePress(vp: Viewport, event: MouseEvent): void {
-    const { clientX, clientY } = event; // screen coordinates within browser
+  _handlePress(event: MouseEvent): void {
     const { offsetX, offsetY } = event; // screen coordinates within canvas
-    const { worldX, worldY } = ScreenToWorld(vp, offsetX, offsetY);
-    console.log(
-      `DN: ${worldX.toFixed(2)}, ${worldY.toFixed(2)} (${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`
-    );
+    const cx = offsetX - this.width / 2;
+    const cy = this.height / 2 - offsetY;
+    const [worldX, worldY] = ScreenToWorld(this, cx, cy);
+    console.log(`DN: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`);
     this.mousedown = true;
   }
-  _handleRelease(vp: Viewport, event: MouseEvent): void {
-    return;
-    const { clientX, clientY } = event;
-    // convert to world coordinates
-    const { worldX, worldY } = ScreenToWorld(vp, clientX, clientY);
-    console.log(`UP: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
+  _handleRelease(event: MouseEvent): void {
     this.mousedown = false;
-  }
-  _handleMove(vp: Viewport, event: MouseEvent): void {
     return;
-    if (this.mousedown) {
-      const { clientX, clientY } = event;
-      const { worldX, worldY } = ScreenToWorld(vp, clientX, clientY);
-      console.log(`MV: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
-    }
+  }
+  _handleMove(event: MouseEvent): void {
+    return;
   }
 
   /// WORLD CAMERA UTILITIES ///

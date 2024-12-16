@@ -101,12 +101,6 @@ function Initialize() {
     over: { scene: new THREE.Scene(), cam: VIEWPORT.screenCam() },
     hud: { scene: new THREE.Scene(), cam: VIEWPORT.screenCam() }
   };
-  // initialize viewport
-  const main = document.getElementById('main-gl');
-  VIEWPORT.initRenderer('main-gl');
-  const { worldUnits } = GetViewConfig(); // number of world units visible
-  VIEWPORT.sizeWorldToViewport(worldUnits);
-  VIEWPORT.initializeCameras();
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** called during GamePhase DRAW_WORLD */

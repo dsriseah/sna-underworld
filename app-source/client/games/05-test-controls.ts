@@ -32,11 +32,9 @@ function SetupScene() {
   WU = GetViewConfig().worldUnits;
 
   let starBright = [
-    new THREE.Color(1.0, 1.0, 1.0)
-    // new THREE.Color(1.0, 0.5, 0.5),
-    // new THREE.Color(0.5, 1.0, 0.5),
-    // new THREE.Color(0.5, 0.5, 1.0),
-    // new THREE.Color(0.5, 0.5, 0.5)
+    new THREE.Color(1.0, 1.0, 1.0),
+    new THREE.Color(1.0, 0.5, 0.5),
+    new THREE.Color(0.5, 1.0, 0.5)
   ];
   let starSpec = {
     parallax: 0.1
