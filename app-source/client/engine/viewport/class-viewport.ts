@@ -33,6 +33,8 @@ import {
   ScreenToWorld,
   _d
 } from './vp-util.ts';
+import { AddViewportStatus, AddInputStatus } from '../system-screen.ts';
+import { FrameCount } from '../../game-state.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -291,14 +293,32 @@ class Viewport {
     const cx = offsetX - this.width / 2;
     const cy = this.height / 2 - offsetY;
     const [worldX, worldY] = ScreenToWorld(this, cx, cy);
-    console.log(`DN: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`);
+    AddInputStatus({
+      MOUSE: `DN: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`
+    });
     this.mousedown = true;
   }
   _handleRelease(event: MouseEvent): void {
+    const { offsetX, offsetY } = event; // screen coordinates within canvas
+    const cx = offsetX - this.width / 2;
+    const cy = this.height / 2 - offsetY;
+    const [worldX, worldY] = ScreenToWorld(this, cx, cy);
+    AddInputStatus({
+      MOUSE: `UP: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`
+    });
     this.mousedown = false;
     return;
   }
   _handleMove(event: MouseEvent): void {
+    if (!this.mousedown) return;
+    if (FrameCount() % 10 !== 0) return;
+    const { offsetX, offsetY } = event; // screen coordinates within canvas
+    const cx = offsetX - this.width / 2;
+    const cy = this.height / 2 - offsetY;
+    const [worldX, worldY] = ScreenToWorld(this, cx, cy);
+    AddInputStatus({
+      MOUSE: `MV: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`
+    });
     return;
   }
 

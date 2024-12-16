@@ -103,9 +103,14 @@ header.title p {
   margin: 0 auto;
 }
 
-#keys,
 #info {
   padding: 0.5em;
+}
+#keys {
+  padding: 0.5em 0.5em 0 0.5em;
+}
+#inputs {
+  padding: 0 0.5em 0.5em 0.5em;
 }
 
 footer {

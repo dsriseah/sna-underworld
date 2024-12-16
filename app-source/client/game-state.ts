@@ -119,7 +119,7 @@ function m_UpdateConsole() {
   const css = 'padding:2px 6px;background-color:#333;color:#fff;';
   // get all pressed keys
   const keys = Object.keys(KEY_STATE).filter(key => KEY_STATE[key].pressed);
-  const stat = `<span style="color:grey">KEYS:</span> ${keys.join(' ')}`;
+  const stat = `<span style="color:grey;white-space:pre">KEYS :</span> ${keys.join(' ')}`;
   const keysElement = document.getElementById(ui_ctrl_keys);
   keysElement.innerHTML = stat;
   KEY_STATE.pressed = new Set(keys);

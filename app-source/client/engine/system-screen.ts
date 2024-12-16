@@ -18,7 +18,10 @@ const LOG = console.log.bind(this);
 const PR = ConsoleStyler('render', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let VIEWPORT = new Viewport();
-const VP_STATS: any = {};
+let VP_STATS: any = {};
+let IN_STATS: any = {};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+let INPUT_TIMER: number; // input timer handle
 
 /// VIEWPORT UTILITIES ////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,8 +54,30 @@ function AddViewportStatus(stats: { [key: string]: string }) {
   Object.assign(VP_STATS, stats);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_DrawInputStats() {
+  let html = '';
+  const keys = Object.keys(IN_STATS);
+  const keyLen = keys.reduce((a, b) => Math.max(a, b.length), 0);
+  Object.keys(IN_STATS).forEach(key => {
+    html += `<span style="color:grey;white-space:pre">${key.padEnd(keyLen)}:</span> ${IN_STATS[key]}<br>`;
+  });
+  const infoElement = document.getElementById('inputs');
+  infoElement.innerHTML = html;
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function AddInputStatus(stats: { [key: string]: string }) {
+  Object.assign(IN_STATS, stats);
+  m_DrawInputStats();
+  if (INPUT_TIMER) clearTimeout(INPUT_TIMER);
+  INPUT_TIMER = setTimeout(() => {
+    IN_STATS = {};
+    m_DrawInputStats();
+    clearTimeout(INPUT_TIMER);
+  }, 3000);
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** called during GamePhase DRAW_UI */
-function DrawViewportStatus() {
+function DrawStatus() {
   if (FrameCount() % 10 !== 0) return;
   // update viewport status
   const vpinfo = VIEWPORT.info();
@@ -91,7 +116,7 @@ export default SNA.NewComponent('Screen', {
       Initialize();
     });
     HookGamePhase('DRAW_UI', () => {
-      DrawViewportStatus();
+      DrawStatus();
     });
   }
 });
@@ -103,5 +128,6 @@ export {
   GetViewport, // () => Viewport
   ResizeViewport, // (wpx: number, hpx: number) => void
   // viewport status
-  AddViewportStatus
+  AddViewportStatus,
+  AddInputStatus
 };
