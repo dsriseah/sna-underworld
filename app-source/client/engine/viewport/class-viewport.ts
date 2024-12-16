@@ -111,6 +111,8 @@ class Viewport {
     cgl.addEventListener('mousedown', evt => this._handlePress(evt));
     cgl.addEventListener('mouseup', evt => this._handleRelease(evt));
     cgl.addEventListener('mousemove', evt => this._handleMove(evt));
+    // add event listener for mouse leaving the viewport
+    cgl.addEventListener('mouseleave', evt => this._handleLeave(evt));
   }
 
   /** Viewport mode is how the viewport scales the renderer to the container */
@@ -299,6 +301,7 @@ class Viewport {
     this.mousedown = true;
   }
   _handleRelease(event: MouseEvent): void {
+    if (!this.mousedown) return;
     const { offsetX, offsetY } = event; // screen coordinates within canvas
     const cx = offsetX - this.width / 2;
     const cy = this.height / 2 - offsetY;
@@ -320,6 +323,12 @@ class Viewport {
       MOUSE: `MV: ${_d(worldX)}, ${_d(worldY)} (${_d(cx)}, ${_d(cy)})`
     });
     return;
+  }
+  _handleLeave(event: MouseEvent): void {
+    AddInputStatus({
+      MOUSE: `left viewport`
+    });
+    this.mousedown = false;
   }
 
   /// WORLD CAMERA UTILITIES ///
