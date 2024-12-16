@@ -18,29 +18,27 @@
 
 import * as THREE from 'three';
 import { GetViewConfig } from '../../game-state.ts';
-import { GetViewport } from '../system-screen.ts';
+import { ConsoleStyler } from '@ursys/core';
+import * as Screen from '../system-screen.ts';
+import { _d, WorldToScreen } from '../viewport/vp-util.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const DBG = true;
 const LOG = console.log.bind(this);
+const PR = ConsoleStyler('stars', 'TagRed');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const DIM = 2; // number of starfield grids (2x2)
-const SPC = 10; // avg spacing between stars in screenspace pixels
+const DIM = 2; // number of starfield grids (2x2) do not change!!!
+const SPC = 100; // avg spacing between stars in screenspace pixels
+const SIZE = 3; // size of the stars in screenspace pixels
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SNA_Starfield extends THREE.Points {
-  width: number; // viewport width
-  height: number; // viewport height;
-  halfWidth: number; // half viewport width
-  halfHeight: number; // half viewport height
-  clampWidth: number; // quarter viewport width
-  clampHeight: number; // quarter viewport height
-  wrapX: (x: number) => number; // clamp x to viewport
-  wrapY: (y: number) => number; // clamp y to viewport
+  wrapX: (wx: number) => number; // clamp worldX to viewport
+  wrapY: (wy: number) => number; // clamp worldY to viewport
   color: THREE.Color;
   parallax: number;
 
@@ -49,45 +47,27 @@ class SNA_Starfield extends THREE.Points {
   constructor(color: THREE.Color, opt?: { parallax: number }) {
     super();
     this.color = color;
-    const { width, height } = GetViewport().dimensions();
-    this.width = width;
-    this.height = height;
-    this.makeClampFunctions();
-    const { parallax } = opt || { parallax: 0 };
+    const { width, height } = Screen.GetViewport().dimensions();
+    if (DBG) LOG(...PR(`Background Dimensions: ${width}x${height}`));
+    this.makeWorldClampFunctions();
+    const { parallax } = opt || { parallax: 0.5 };
     this.parallax = parallax;
     const geo = this.makePointGeometry(color);
-    // const geo = m_GenerateDummyGeometry(color);
     const mat = new THREE.PointsMaterial({
       color: color || 0xffffff,
-      size: 1
+      size: SIZE
     });
     this.material = mat;
     this.geometry = geo;
   }
 
-  makeClampFunctions() {
-    this.halfWidth = this.width / 2;
-    this.halfHeight = this.height / 2;
-    this.clampWidth = this.halfWidth / 2;
-    this.clampHeight = this.halfHeight / 2;
-    this.wrapX = (x: number) => {
-      if (x > this.clampWidth) return x - this.halfWidth;
-      if (x < -this.clampWidth) return x + this.halfWidth;
-      return x;
-    };
-    this.wrapY = (y: number) => {
-      if (y > this.clampHeight) return y - this.halfHeight;
-      if (y < -this.clampHeight) return y + this.halfHeight;
-      return y;
-    };
-  }
-
   makePointGeometry(color: THREE.Color) {
-    const { width, height } = this;
-    const pointsWide = (width / SPC) * DIM;
-    const pointsHigh = (height / SPC) * DIM;
+    const { width, height } = Screen.GetViewport().dimensions();
+    const starCol = (width / SPC) * DIM;
+    const starRow = (height / SPC) * DIM;
+    if (DBG) LOG(...PR(`StarCount: ${starCol}x${starRow} = ${starCol * starRow}`));
 
-    let numPoints = pointsWide * pointsHigh;
+    let numPoints = starCol * starRow;
     let off = numPoints / (DIM * DIM); // the geometry
     if (Math.floor(off) !== off)
       console.error('point cloud needs to have pointnum divisible by 4');
@@ -97,20 +77,18 @@ class SNA_Starfield extends THREE.Points {
 
     // calculate colors and positions array
     let k = 0; // index for positions array
-    let dx = 1 / pointsWide;
-    let dy = 1 / pointsHigh;
+    let dx = 1 / starCol;
+    let dy = 1 / starRow;
 
     // iterate across the entire grid to genereate normalized coordinates
-    for (let i = 0; i < pointsWide / 2; i++) {
-      for (let j = 0; j < pointsHigh / 2; j++) {
+    for (let i = 0; i < starCol / 2; i++) {
+      for (let j = 0; j < starRow / 2; j++) {
         // uv is the gridded coordinate normalized to -0.5 to +0.5
-        let u = i / pointsWide - 0.5;
-        let v = j / pointsHigh - 0.5;
+        let u = i / starCol - 0.5;
+        let v = j / starRow - 0.5;
         // randomize the position slightly to create a more natural look
-        // let x = u - (Math.random() - 0.5) * dx;
-        // let y = v - (Math.random() - 0.5) * dy;
-        let x = u;
-        let y = v;
+        let x = u - (Math.random() - 0.5) * dx;
+        let y = v - (Math.random() - 0.5) * dy;
         let z = 0;
 
         // lower-left quadrant
@@ -153,12 +131,21 @@ class SNA_Starfield extends THREE.Points {
         k++;
       }
     }
+
+    if (DBG) {
+      LOG(...PR(`Plotted ${k} stars x 4 = ${k * 4}`));
+      // find min, max of positions
+      let min = Math.min(...positions);
+      let max = Math.max(...positions);
+      LOG(...PR(`Position Range: ${min.toFixed(2)} to ${max.toFixed(2)}`));
+    }
+
     // create geometry buffer
     let geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    // spread points large enough so
-    geometry.scale(width, height, 0);
+    geometry.scale(width, height, 1);
+    geometry.scale(DIM, DIM, 1);
     return geometry;
   }
 
@@ -167,35 +154,61 @@ class SNA_Starfield extends THREE.Points {
     this.parallax = p;
   }
 
-  wrapCoordinates(x: number, y: number) {
-    return {
-      x: this.wrapX(x),
-      y: this.wrapY(y)
+  /** create clamp functions */
+  makeWorldClampFunctions() {
+    const { worldUnits } = GetViewConfig();
+    const halfWidth = (worldUnits / 2) * DIM;
+    const halfHeight = (worldUnits / 2) * DIM;
+    const clampWidth = halfWidth / 2;
+    const clampHeight = halfHeight / 2;
+
+    this.wrapX = (wx: number) => {
+      wx = wx % halfWidth;
+      if (wx > clampWidth) wx -= worldUnits;
+      else if (wx < -clampWidth) wx += worldUnits;
+      return wx;
     };
+    this.wrapY = (wy: number) => {
+      wy = wy % halfHeight;
+      if (wy > clampHeight) return (wy -= worldUnits);
+      if (wy < -halfHeight) return (wy += worldUnits);
+      return wy;
+    };
+  }
+
+  /* given a world position, wrap it to the starfield */
+  wrapCoordinates(wx: number, wy: number) {
+    return [this.wrapX(wx), this.wrapY(wy)];
   }
 
   /// POSITION WITHIN FIELD ///
 
   /** main method to set the position of the starfield */
-  trackXYZ(x: number, y: number, z: number) {
-    let xx = -x * this.parallax;
-    let yy = -y * this.parallax;
+  trackXYZ(wx: number, wy: number, z: number) {
+    const VP = Screen.GetViewport();
+    const [xx, yy] = this.wrapCoordinates(-wx * this.parallax, -wy * this.parallax);
+    const [sx, sy] = WorldToScreen(VP, xx, yy);
+
+    // flicker
     if (Math.random() > 0.9) this.visible = false;
     else this.visible = true;
-    // console.log(`old:${x.toFixed(2)} new:${xx.toFixed(2)}`);
-    this.position.x = this.wrapX(xx);
-    this.position.y = this.wrapY(yy);
-    this.position.z = z * this.parallax;
+
+    this.position.x = sx;
+    this.position.y = sy;
   }
+  /** track a THREE.Vector3 position */
   track(v3: THREE.Vector3) {
     this.trackXYZ(v3.x, v3.y, v3.z);
   }
+  /* track a 2D position */
   trackXY(x: number, y: number) {
     this.trackXYZ(x, y, this.position.z);
   }
+  /* track just x */
   TrackX(x: number) {
     this.trackXYZ(x, this.position.y, this.position.z);
   }
+  /* track just y */
   TrackY(y: number) {
     this.trackXYZ(this.position.x, y, this.position.z);
   }
