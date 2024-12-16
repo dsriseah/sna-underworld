@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetViewConfig, FrameCount } from '../game-state.ts';
+import { GetViewConfig, IsFrameSlice } from '../game-state.ts';
 import { Viewport } from './viewport/class-viewport.ts';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
@@ -78,7 +78,7 @@ function AddInputStatus(stats: { [key: string]: string }) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** called during GamePhase DRAW_UI */
 function DrawStatus() {
-  if (FrameCount() % 10 !== 0) return;
+  if (!IsFrameSlice(0)) return;
   // update viewport status
   const vpinfo = VIEWPORT.info();
   const { camMode, camPos, visWorld } = vpinfo;

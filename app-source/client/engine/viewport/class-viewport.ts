@@ -34,7 +34,7 @@ import {
   _d
 } from './vp-util.ts';
 import { AddViewportStatus, AddInputStatus } from '../system-screen.ts';
-import { FrameCount } from '../../game-state.ts';
+import { IsFrameSlice } from '../../game-state.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -314,7 +314,7 @@ class Viewport {
   }
   _handleMove(event: MouseEvent): void {
     if (!this.mousedown) return;
-    if (FrameCount() % 10 !== 0) return;
+    if (!IsFrameSlice(2)) return;
     const { offsetX, offsetY } = event; // screen coordinates within canvas
     const cx = offsetX - this.width / 2;
     const cy = this.height / 2 - offsetY;

@@ -29,6 +29,9 @@ const DBG = false;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let FRAME_RATE = 60; // rate in frames per second
 let FRAME_DUR_MS = 1000 / FRAME_RATE; // duration of a frame in milliseconds
+let CUR_SLICE = 0; // current frame slace
+let SLICE_MAX = 4; // number of frame slots
+let SLICE_INTERVAL = Math.floor(FRAME_RATE / 15); // 1/10th of a second
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const TIME_STATE = {
   timeMS: 0, // increasing game time in milliseconds
@@ -58,6 +61,16 @@ function SetFrameRate(rate: number) {
 }
 function FrameCount() {
   return TIME_STATE.frameCount;
+}
+/** Check if the current frame is a slice of the frame rate, a number from
+ *  0 to SLICE_MAX. */
+function IsFrameSlice(slot: number = 0) {
+  if (TIME_STATE.frameCount % SLICE_INTERVAL == 0) {
+    CUR_SLICE++;
+    if (CUR_SLICE === SLICE_MAX) CUR_SLICE = 0;
+    return CUR_SLICE === slot;
+  }
+  return false;
 }
 
 /// VIEW STATE ////////////////////////////////////////////////////////////////
@@ -202,5 +215,7 @@ export {
   FrameIntervalMS,
   FrameRate,
   SetFrameRate,
-  FrameCount
+  FrameCount,
+  // utilities
+  IsFrameSlice
 };
