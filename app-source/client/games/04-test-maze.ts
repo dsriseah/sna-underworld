@@ -6,10 +6,11 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetViewState } from '../game-state.ts';
+import { GetViewConfig } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
+import * as Screen from '../engine/system-screen.ts';
 import { MazePlayer } from '../engine/players/play-maze.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@ let WU: number;
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
-  WU = GetViewState().worldUnits;
+  WU = GetViewConfig().worldUnits;
 
   let starBright = [
     new THREE.Color(1.0, 1.0, 1.0),
@@ -82,7 +83,7 @@ function Update() {
   if (sprite.position.x > WU2) sprite.position.x = -WU2;
   if (sprite.position.y > WU2) sprite.position.x = -WU2;
   // update tracking cameras
-  Renderer.GetViewport().track(sprite.position);
+  Screen.GetViewport().track(sprite.position);
   for (let sf of starfields) sf.track(sprite.position);
 }
 

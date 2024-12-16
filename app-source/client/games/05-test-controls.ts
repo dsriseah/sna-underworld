@@ -6,10 +6,11 @@
 
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetViewState, GetKeyState, GetTimeState } from '../game-state.ts';
+import { GetViewConfig, GetKeyState, GetTimeState } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
+import * as Screen from '../engine/system-screen.ts';
 import { MazePlayer } from '../engine/players/play-maze.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -28,20 +29,20 @@ let WU: number;
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function SetupScene() {
-  WU = GetViewState().worldUnits;
+  WU = GetViewConfig().worldUnits;
 
   let starBright = [
-    new THREE.Color(1.0, 1.0, 1.0),
-    new THREE.Color(1.0, 0.5, 0.5),
-    new THREE.Color(0.5, 1.0, 0.5),
-    new THREE.Color(0.5, 0.5, 1.0),
-    new THREE.Color(0.5, 0.5, 0.5)
+    new THREE.Color(1.0, 1.0, 1.0)
+    // new THREE.Color(1.0, 0.5, 0.5),
+    // new THREE.Color(0.5, 1.0, 0.5),
+    // new THREE.Color(0.5, 0.5, 1.0),
+    // new THREE.Color(0.5, 0.5, 0.5)
   ];
   let starSpec = {
     parallax: 0.1
   };
   let starfields = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < starBright.length; i++) {
     const sb = starBright[i].multiplyScalar(0.1);
     let sf = VisualMgr.MakeStarField(sb, starSpec);
     starSpec.parallax += 0.1;
@@ -132,8 +133,8 @@ function Update() {
   if (ship.heading < -Math.PI) ship.heading += Math.PI * 2;
   sprite.material.map.rotation = ship.heading;
 
-  // update tracking cameras
-  Renderer.GetViewport().track(sprite.position);
+  // hack: tracking would ordinarily be part of the sprite Update()
+  Screen.GetViewport().track(sprite.position);
   for (let sf of starfields) sf.track(sprite.position);
 }
 

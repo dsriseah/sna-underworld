@@ -27,6 +27,11 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
+import {
+  GetFramingDistance,
+  GetWorldUnitsVisible,
+  ScreenToWorld
+} from './vp-util.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,54 +50,6 @@ type ScreenCapFormat = 'jpg' | 'png';
 let viewport_count = 0;
 // scratch variables
 let v = new THREE.Vector3(0, 0, 0);
-
-/// HELPERS ////////////////////////////////////////////////////////////////////
-
-/** calculates how far a 3D camera with a particular FOV needs to move back
- *  to show fWidth and fHeight pixels. Used to frame a particular number
- *  of world units */
-function m_GetFramingDistance(cam3D, fWidth, fHeight, safety?) {
-  safety = safety || 0.5;
-  let buffer = fWidth * safety;
-
-  fWidth += buffer;
-  fHeight += buffer;
-
-  // update world3d camera by positioning it
-  // to default see the entire world
-  let deg2rad = 180 / Math.PI;
-  let hfov = deg2rad * (cam3D.fov / 2);
-  let tan = Math.tan(hfov);
-  let d = Math.max(fWidth / tan, fHeight / tan);
-
-  // console.log("frame",fWidth*2+'x'+fHeight*2,"D="+d.toFixed(2));
-  return d;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function m_GetWorldUnitsVisible(vp: Viewport) {
-  const cam = vp.camWORLD;
-  if (cam instanceof THREE.PerspectiveCamera) {
-    let hw = cam.aspect * Math.tan((cam.fov * Math.PI) / 360);
-    let hh = Math.tan((cam.fov * Math.PI) / 360);
-    let wu = Math.max(hw, hh) * 2;
-    return { hw, hh, wu };
-  } else if (cam instanceof THREE.OrthographicCamera) {
-    let hw = cam.right - cam.left;
-    let hh = cam.top - cam.bottom;
-    let wu = Math.max(hw, hh);
-    return { hw, hh, wu };
-  }
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function m_ScreenToWorld(vp: Viewport, clientX: number, clientY: number) {
-  let hw = vp.width / 2;
-  let hh = vp.height / 2;
-  let cx = vp.camWORLD.position.x;
-  let cy = vp.camWORLD.position.y;
-  let x = (clientX - hw) * vp.worldScale;
-  let y = (clientY - hh) * vp.worldScale;
-  return { worldX: x + cx, worldY: y + cy };
-}
 
 /// CLASS DECLARATION /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -209,9 +166,11 @@ class Viewport {
     let hw = this.width / 2;
     let hh = this.height / 2;
     this.worldAspect = hw / hh;
+
     // 2D cameras use screenspace coordinates
     this.camBG = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0, 1000);
     this.camSCREEN = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0, 1000);
+
     // 3d world cameras use world coordinates
     let whw = (this.width * this.worldScale) / 2;
     let whh = (this.height * this.worldScale) / 2;
@@ -238,12 +197,21 @@ class Viewport {
 
     // set the 3d worldcam at distance so it can see the right number of
     // world units defined in step 2
-    let d = m_GetFramingDistance(this.cam3D, whw, whh);
+    let d = GetFramingDistance(this.cam3D, whw, whh);
     this.cam3D.position.z = d;
     this.cam2D.position.z = d;
 
     // assign default world camera as 2D
     this.camWORLD = this.cam3D;
+
+    // also
+    this.updateScreenCameras();
+  }
+
+  /** update the viewport cameras that use screen coordinates */
+  updateScreenCameras(): void {
+    this.camBG.updateProjectionMatrix();
+    this.camSCREEN.updateProjectionMatrix();
   }
 
   /// VIEWPORT SIZE METHOD in SCREEN COORDINATES ///
@@ -293,24 +261,6 @@ class Viewport {
     };
   }
 
-  /** update the viewport cameras that use screen coordinates */
-  updateViewportCameras(): void {
-    let hw = this.width / 2;
-    let hh = this.height / 2;
-    this.camBG.left = -hw;
-    this.camBG.right = +hw;
-    this.camBG.top = +hh;
-    this.camBG.bottom = -hh;
-
-    this.camSCREEN.left = -hw;
-    this.camSCREEN.right = +hw;
-    this.camSCREEN.top = +hh;
-    this.camSCREEN.bottom = -hh;
-
-    this.camBG.updateProjectionMatrix();
-    this.camSCREEN.updateProjectionMatrix();
-  }
-
   /// WORLD CAMERAS in WORLD COORDINATES ///
 
   /** return the current world dimensions */
@@ -346,7 +296,7 @@ class Viewport {
   _handlePress(vp: Viewport, event: MouseEvent): void {
     const { clientX, clientY } = event; // screen coordinates within browser
     const { offsetX, offsetY } = event; // screen coordinates within canvas
-    const { worldX, worldY } = m_ScreenToWorld(vp, offsetX, offsetY);
+    const { worldX, worldY } = ScreenToWorld(vp, offsetX, offsetY);
     console.log(
       `DN: ${worldX.toFixed(2)}, ${worldY.toFixed(2)} (${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`
     );
@@ -356,7 +306,7 @@ class Viewport {
     return;
     const { clientX, clientY } = event;
     // convert to world coordinates
-    const { worldX, worldY } = m_ScreenToWorld(vp, clientX, clientY);
+    const { worldX, worldY } = ScreenToWorld(vp, clientX, clientY);
     console.log(`UP: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
     this.mousedown = false;
   }
@@ -364,7 +314,7 @@ class Viewport {
     return;
     if (this.mousedown) {
       const { clientX, clientY } = event;
-      const { worldX, worldY } = m_ScreenToWorld(vp, clientX, clientY);
+      const { worldX, worldY } = ScreenToWorld(vp, clientX, clientY);
       console.log(`MV: ${worldX}, ${worldY} (${clientX}, ${clientY})`);
     }
   }
@@ -378,7 +328,7 @@ class Viewport {
     let whh = (this.height * this.worldScale) / 2;
     // update world3d camera by positioning it
     // to default see the entire world
-    let d = m_GetFramingDistance(this.cam3D, whw, whh);
+    let d = GetFramingDistance(this.cam3D, whw, whh);
     // update camera distances
     this.cam3D.position.z = d;
     this.cam2D.position.z = d;
@@ -482,7 +432,7 @@ class Viewport {
   info() {
     const cp = this.camWORLD.position;
     const scrn = this.camSCREEN.position;
-    const visWorld = m_GetWorldUnitsVisible(this);
+    const visWorld = GetWorldUnitsVisible(this);
     return {
       camMode: this.worldCam() === this.cam3D ? '3D' : '2D',
       camPos: { x: cp.x, y: cp.y, z: cp.z },

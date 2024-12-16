@@ -9,12 +9,13 @@
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GameTimeMS, GetViewState } from '../game-state.ts';
+import { GameTimeMS, GetViewConfig } from '../game-state.ts';
 import * as TextureMgr from './texture-mgr.ts';
-import { Viewport } from './visuals/class-viewport.ts';
+import * as Screen from './system-screen.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+import type { Viewport } from './viewport/class-viewport.ts';
 type RP_Name = 'bg' | 'fx0' | 'world' | 'fx1' | 'over' | 'hud';
 type RP_Dictionary = { [key in RP_Name]: { scene: THREE.Scene; cam: THREE.Camera } };
 
@@ -26,8 +27,8 @@ const PR = ConsoleStyler('render', 'TagGreen');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let RP_NAMES: RP_Name[] = ['bg', 'fx0', 'world', 'fx1', 'hud'];
 let RP_DICT: RP_Dictionary;
-let VIEWPORT = new Viewport();
 let BG_SPRITE: THREE.Sprite;
+let VIEWPORT: Viewport;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let CAPTURE_SCREEN = false; // screen capture request flag
 
@@ -80,40 +81,11 @@ function RP_SetBackgroundImage(texPath: string) {
   RP_AddVisual('bg', BG_SPRITE);
 }
 
-/// VIEWPORT UTILITIES ////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** get the Viewport instance */
-function GetViewport() {
-  return VIEWPORT;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** called when browser window is resized. wpx and hpx are probably clientWidth
- *  and clientHeight of the main container hold the webgl renderer */
-function ResizeViewport(wpx: number, hpx: number) {
-  if (hpx === undefined) hpx = wpx;
-  VIEWPORT.setDimensions(wpx, hpx);
-  VIEWPORT.updateViewportCameras();
-}
-
 /// SCREEN CAPTURE ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** request a screen capture at the next DrawWorld() call */
 function CaptureScreen() {
   CAPTURE_SCREEN = true;
-}
-
-/// SCREEN CLICKS /////////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** WIP 'what got clicked in the world' */
-function GetClickedVisual(x: number, y: number): THREE.Object3D[] {
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-  mouse.x = (x / VIEWPORT.width) * 2 - 1;
-  mouse.y = -(y / VIEWPORT.height) * 2 + 1;
-  raycaster.setFromCamera(mouse, VIEWPORT.worldCam());
-  const { scene } = RP_DICT['world'];
-  const intersects = raycaster.intersectObjects(scene.children, true);
-  return intersects.map(i => i.object);
 }
 
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
@@ -132,7 +104,7 @@ function Initialize() {
   // initialize viewport
   const main = document.getElementById('main-gl');
   VIEWPORT.initRenderer('main-gl');
-  const { worldUnits } = GetViewState(); // number of world units visible
+  const { worldUnits } = GetViewConfig(); // number of world units visible
   VIEWPORT.sizeWorldToViewport(worldUnits);
   VIEWPORT.initializeCameras();
 }
@@ -153,38 +125,17 @@ function DrawWorld() {
   // check for screen capture request
   m_CheckCaptureScreen();
 }
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** called during GamePhase DRAW_UI */
-function DrawViewportStatus() {
-  // update viewport status
-  let out;
-  const vpinfo = VIEWPORT.info();
-  const { camMode, camPos, visWorld } = vpinfo;
-  const camx = camPos.x;
-  const camy = camPos.y;
-  out = `${camx.toFixed(2)}, ${camy.toFixed(2)}`;
-  const cam = `<span style="color:grey">CAMERA:</span> ${out}<br>`;
-  const { hw, hh } = visWorld;
-  const _ = n => n.toFixed(2);
-  const range = `${_(camx - hw)}, ${_(camy - hh)} - ${_(camx + hw)}, ${_(camy + hh)}`;
-  const wrd = `<span style="color:grey">WORLD&nbsp;:</span> ${range}<range>`;
-  //
-  const infoElement = document.getElementById('info');
-  infoElement.innerHTML = cam + wrd;
-}
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export default SNA.NewComponent('RenderMgr', {
   PreHook: () => {
-    HookGamePhase('INIT', () => {
+    HookGamePhase('MGR_INIT', () => {
+      VIEWPORT = Screen.GetViewport();
       Initialize();
     });
     HookGamePhase('DRAW_WORLD', () => {
       DrawWorld();
-    });
-    HookGamePhase('DRAW_UI', () => {
-      DrawViewportStatus();
     });
   }
 });
@@ -192,9 +143,6 @@ export default SNA.NewComponent('RenderMgr', {
 /// API EXPORTS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export {
-  // viewport utilities
-  GetViewport, // () => Viewport
-  ResizeViewport, // (wpx: number, hpx: number) => void
   // renderpass methods
   RP_AddVisual, // (pass: RP_Name, visual: any) => void
   RP_RemoveVisual, // (pass: RP_Name, visual: any) => void

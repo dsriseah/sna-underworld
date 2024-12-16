@@ -9,6 +9,7 @@ import { HookGamePhase } from '../game-mcp.ts';
 import { GetPaths } from '../game-state.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
+import * as Screen from '../engine/system-screen.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -47,7 +48,7 @@ function Update() {
   const { sprite, ship } = VISUALS;
   sprite.material.rotation += 0.01;
   ship.material.rotation -= 0.01;
-  const VP = Renderer.GetViewport();
+  const VP = Screen.GetViewport();
   const cam = VP.worldCam();
   cam.position.x += 0.1;
   if (cam.position.x > 1) cam.position.x = -10;

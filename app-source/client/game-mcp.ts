@@ -31,7 +31,9 @@ let GAME_TIMER: number; // game loop timer handle
 const { PhaseMachine } = CLASS;
 const PM = new PhaseMachine('SNA_GAME', {
   GAME_INIT: [
-    'INIT', // game initialization
+    'SYS_INIT', // game system initialization
+    'MGR_INIT', // game manager initialization
+    'INIT', // non-system module initialization
     'LOAD_ASSETS', // game asset loading
     'CONSTRUCT', // game object construction
     'START' // game start

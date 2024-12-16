@@ -14,7 +14,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { ConsoleStyler, SNA } from '@ursys/core';
+import { ConsoleStyler } from '@ursys/core';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,12 +36,43 @@ const TIME_STATE = {
   frameRate: FRAME_RATE, // current frame rate
   framDurMS: FRAME_DUR_MS // duration of a frame in milliseconds
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetTimeState() {
+  return TIME_STATE;
+}
+function GameTimeMS() {
+  return TIME_STATE.timeMS;
+}
+function RealFrameIntervalMS() {
+  return TIME_STATE.elapsedMS;
+}
+function FrameIntervalMS() {
+  return FRAME_DUR_MS;
+}
+function FrameRate() {
+  return TIME_STATE.frameRate;
+}
+function SetFrameRate(rate: number) {
+  TIME_STATE.frameRate = rate;
+}
 
 /// VIEW STATE ////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const VIEW_STATE = {
-  worldUnits: 100 // number of world units per viewport
+  worldUnits: 100, // number of world units per viewport
+  screenUnits: 800 // number of visible pixels per viewport
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetViewConfig() {
+  const { worldUnits, screenUnits } = VIEW_STATE;
+  return { worldUnits, screenUnits };
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function SetViewConfigUnsafe(config) {
+  const { worldUnits, screenUnits } = config;
+  if (typeof worldUnits === 'number') VIEW_STATE.worldUnits = worldUnits;
+  if (typeof screenUnits === 'number') VIEW_STATE.screenUnits = screenUnits;
+}
 
 /// PATHS /////////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,6 +82,10 @@ const PATHS = {
   datapackPath: PACK_PATH,
   defaultSpriteName: DEF_SPR_NAME
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetPaths() {
+  return PATHS;
+}
 
 /// HTML LAYOUT ////////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,7 +93,7 @@ const main_container = 'main-gl';
 const ui_container = 'ui-html';
 const ui_ctrl_keys = 'keys';
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetHTMLLayout() {
+function GetHTMLConfig() {
   return {
     main_gl: main_container,
     side_ui: ui_container,
@@ -71,6 +106,10 @@ function GetHTMLLayout() {
 let KEY_STATE = {
   pressed: new Set() // Set<key>
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function GetKeyState() {
+  return KEY_STATE;
+}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_UpdateConsole() {
   const css = 'padding:2px 6px;background-color:#333;color:#fff;';
@@ -119,12 +158,8 @@ function AttachKeyListeners() {
 
   main.focus();
 }
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetKeyState() {
-  return KEY_STATE;
-}
 
-/// HELPER METHODS ////////////////////////////////////////////////////////////
+/// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Update game loop timers */
 function Update() {
@@ -134,35 +169,6 @@ function Update() {
     TIME_STATE.elapsedMS = TIME_STATE.timeMS - oldTime;
     return TIME_STATE;
   }
-}
-
-/// ACCESSOR METHODS //////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetTimeState() {
-  return TIME_STATE;
-}
-function GameTimeMS() {
-  return TIME_STATE.timeMS;
-}
-function RealFrameIntervalMS() {
-  return TIME_STATE.elapsedMS;
-}
-function FrameIntervalMS() {
-  return FRAME_DUR_MS;
-}
-function FrameRate() {
-  return TIME_STATE.frameRate;
-}
-function SetFrameRate(rate: number) {
-  TIME_STATE.frameRate = rate;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetViewState() {
-  return VIEW_STATE;
-}
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function GetPaths() {
-  return PATHS;
 }
 
 /// SNA DECLARATION EXPORT ////////////////////////////////////////////////////
@@ -177,11 +183,13 @@ export {
   // lifecycle
   AttachKeyListeners,
   Update,
+  // config objects
+  GetViewConfig,
+  SetViewConfigUnsafe,
   // state objects
   GetTimeState,
-  GetViewState,
   GetPaths,
-  GetHTMLLayout,
+  GetHTMLConfig,
   GetKeyState,
   // time acceessors
   GameTimeMS,

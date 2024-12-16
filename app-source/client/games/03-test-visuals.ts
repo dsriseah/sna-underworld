@@ -8,6 +8,7 @@ import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
+import * as Screen from '../engine/system-screen.ts';
 import * as VisualMgr from '../engine/visual-mgr.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -66,7 +67,7 @@ function Update() {
   const { sprite, starfields } = VISUALS;
   sprite.changeHeadingBy(0.01);
   sprite.position.x += 0.1;
-  Renderer.GetViewport().track(sprite.position);
+  Screen.GetViewport().track(sprite.position);
   for (let sf of starfields) sf.track(sprite.position);
 }
 
