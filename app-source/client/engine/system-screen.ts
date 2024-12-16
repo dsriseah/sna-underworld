@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { SNA, ConsoleStyler } from '@ursys/core';
 import { HookGamePhase } from '../game-mcp.ts';
-import { GetViewConfig } from '../game-state.ts';
+import { GetViewConfig, FrameCount } from '../game-state.ts';
 import { Viewport } from './viewport/class-viewport.ts';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
@@ -53,6 +53,7 @@ function AddViewportStatus(stats: { [key: string]: string }) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** called during GamePhase DRAW_UI */
 function DrawViewportStatus() {
+  if (FrameCount() % 10 !== 0) return;
   // update viewport status
   const vpinfo = VIEWPORT.info();
   const { camMode, camPos, visWorld } = vpinfo;
@@ -69,9 +70,9 @@ function DrawViewportStatus() {
   const { hw, hh } = visWorld;
   const range = `${_(camx - hw)}, ${_(camy - hh)} - ${_(camx + hw)}, ${_(camy + hh)}`;
   VP_STATS.WORLD = range;
-  //
-  let html = '';
 
+  // draw viewport status
+  let html = '';
   const keys = Object.keys(VP_STATS);
   const keyLen = keys.reduce((a, b) => Math.max(a, b.length), 0);
   Object.keys(VP_STATS).forEach(key => {

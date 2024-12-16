@@ -34,7 +34,8 @@ const TIME_STATE = {
   timeMS: 0, // increasing game time in milliseconds
   elapsedMS: 0, // since last frame in milliseconds
   frameRate: FRAME_RATE, // current frame rate
-  framDurMS: FRAME_DUR_MS // duration of a frame in milliseconds
+  frameDurMS: FRAME_DUR_MS, // duration of a frame in milliseconds
+  frameCount: 0 // current frame count
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function GetTimeState() {
@@ -54,6 +55,9 @@ function FrameRate() {
 }
 function SetFrameRate(rate: number) {
   TIME_STATE.frameRate = rate;
+}
+function FrameCount() {
+  return TIME_STATE.frameCount;
 }
 
 /// VIEW STATE ////////////////////////////////////////////////////////////////
@@ -162,11 +166,12 @@ function AttachKeyListeners() {
 /// LIFECYCLE METHODS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Update game loop timers */
-function Update() {
+function UpdateStateTimers() {
   if (FRAME_RATE > 0) {
     const oldTime = TIME_STATE.timeMS;
     TIME_STATE.timeMS += FRAME_DUR_MS;
     TIME_STATE.elapsedMS = TIME_STATE.timeMS - oldTime;
+    TIME_STATE.frameCount++;
     return TIME_STATE;
   }
 }
@@ -182,7 +187,7 @@ function Update() {
 export {
   // lifecycle
   AttachKeyListeners,
-  Update,
+  UpdateStateTimers,
   // config objects
   GetViewConfig,
   SetViewConfigUnsafe,
@@ -196,5 +201,6 @@ export {
   RealFrameIntervalMS,
   FrameIntervalMS,
   FrameRate,
-  SetFrameRate
+  SetFrameRate,
+  FrameCount
 };

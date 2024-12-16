@@ -78,16 +78,17 @@ async function Start() {
   // first run the INIT phase group
   await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
-  const { frameRate, framDurMS } = GSTATE.GetTimeState();
-  LOG(...PR(`${pre} tick rate set to ${framDurMS.toFixed(2)}ms`));
+  const { frameRate, frameDurMS } = GSTATE.GetTimeState();
+  LOG(...PR(`${pre} tick rate set to ${frameDurMS.toFixed(2)}ms`));
   GAME_TIMER = setInterval(async () => {
     if (frameRate > 0) {
+      GSTATE.UpdateStateTimers();
       await RunPhaseGroup('SNA_GAME/LOOP_BEGIN');
       await RunPhaseGroup('SNA_GAME/LOOP_CALC');
       await RunPhaseGroup('SNA_GAME/LOOP_THINK');
       await RunPhaseGroup('SNA_GAME/LOOP_RENDER');
     }
-  }, framDurMS);
+  }, frameDurMS);
   LOG(...PR(`${pre} is running (${frameRate}fps)`));
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
