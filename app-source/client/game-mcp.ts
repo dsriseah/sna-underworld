@@ -14,7 +14,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { ConsoleStyler, CLASS } from '@ursys/core';
+import { ConsoleStyler, CLASS } from 'ursys/client';
 import * as GSTATE from './game-state.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
@@ -28,8 +28,7 @@ const DBG = true;
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 let GAME_TIMER: number; // game loop timer handle
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const { PhaseMachine } = CLASS;
-const PM = new PhaseMachine('SNA_GAME', {
+const PM = new CLASS.PhaseMachine('SNA_GAME', {
   GAME_INIT: [
     'SYS_INIT', // game system initialization
     'MGR_INIT', // game manager initialization
@@ -60,10 +59,6 @@ const PM = new PhaseMachine('SNA_GAME', {
   END: [] // game over
 });
 
-/// HELPER METHODS ////////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const { RunPhaseGroup, HookPhase } = PhaseMachine;
-
 /// CONTROL METHODS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** used for data structure initialization */
@@ -75,6 +70,7 @@ async function Init() {
 async function Start() {
   const pre = 'Game Lifecycle';
   LOG(...PR(`${pre} is initializing`));
+  const { RunPhaseGroup } = CLASS.PhaseMachine;
   // first run the INIT phase group
   await RunPhaseGroup('SNA_GAME/INIT');
   // then start the game loop
@@ -96,7 +92,7 @@ async function Start() {
 async function Stop() {
   clearInterval(GAME_TIMER);
   GSTATE.SetFrameRate(0);
-  await RunPhaseGroup('SNA_GAME/END');
+  await PM.RunPhaseGroup('SNA_GAME/END');
   LOG(...PR('Stopped Game Loop'));
 }
 
@@ -104,6 +100,7 @@ async function Stop() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Hook into game loop phases */
 function HookGamePhase(phase: string, fn: Function) {
+  const { HookPhase } = CLASS.PhaseMachine;
   HookPhase(`SNA_GAME/${phase}`, fn);
 }
 

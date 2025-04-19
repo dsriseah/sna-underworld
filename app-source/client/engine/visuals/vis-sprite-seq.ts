@@ -5,7 +5,7 @@
   
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { OpReturn } from '@ursys/core';
+import { OpReturn } from 'ursys/client';
 import * as TextureMgr from '../texture-mgr';
 import * as THREE from 'three';
 import { SNA_Sprite } from './vis-sprite.ts';

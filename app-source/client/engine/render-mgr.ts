@@ -7,7 +7,7 @@
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import { HookGamePhase } from '../game-mcp.ts';
 import { GameTimeMS, GetViewConfig } from '../game-state.ts';
 import * as TextureMgr from './texture-mgr.ts';

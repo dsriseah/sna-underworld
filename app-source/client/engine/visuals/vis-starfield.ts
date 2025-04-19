@@ -11,14 +11,11 @@
   The number of points in the grid are based on the number of worldunits
   that are visible in the viewport (e.g. 100). 
 
-
-
-
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
 import * as THREE from 'three';
 import { GetViewConfig } from '../../game-state.ts';
-import { ConsoleStyler } from '@ursys/core';
+import { ConsoleStyler } from 'ursys/client';
 import * as Screen from '../system-screen.ts';
 import { _d, WorldToScreen } from '../viewport/vp-util.ts';
 

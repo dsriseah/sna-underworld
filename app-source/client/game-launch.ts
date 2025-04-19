@@ -13,7 +13,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import * as MCP from './game-mcp.ts';
 import SYS_SCREEN from './engine/system-screen.ts';
 import MOD_RENDER from './engine/render-mgr.ts';
@@ -28,7 +28,7 @@ import GAME from './games/05-test-controls.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-import type { DataObj } from 'tsconfig/types';
+import type { DataObj } from 'ursys/client';
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

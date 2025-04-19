@@ -10,7 +10,7 @@
   
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import MOD_Launcher from './client/game-launch.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////

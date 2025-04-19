@@ -6,14 +6,14 @@
 
 import PATH from 'node:path';
 // @ts-ignore missing type definition from esbuild
-import { SNA, PR } from '@ursys/core';
+import { SNA, TerminalLog } from 'ursys/server';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const LOG = PR('@run-sna', 'TagCyan');
+const LOG = TerminalLog('@run-sna', 'TagCyan');
 const sna_project_dir = PATH.dirname(process.argv[1]);
 
 /// HELPER METHODS ////////////////////////////////////////////////////////////

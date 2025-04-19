@@ -10,7 +10,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
 import { GetPaths } from '../game-state.ts';

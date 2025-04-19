@@ -4,7 +4,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import { HookGamePhase } from '../game-mcp.ts';
 import { GetViewConfig, GetKeyState, GetTimeState } from '../game-state.ts';
 import * as THREE from 'three';

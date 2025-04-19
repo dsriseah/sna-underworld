@@ -4,7 +4,7 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import { HookGamePhase } from '../game-mcp.ts';
 import * as THREE from 'three';
 import * as Renderer from '../engine/render-mgr.ts';
