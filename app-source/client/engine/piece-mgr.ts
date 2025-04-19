@@ -6,11 +6,11 @@
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
-import { SNA, ConsoleStyler } from '@ursys/core';
+import { SNA, ConsoleStyler } from 'ursys/client';
 import * as THREE from 'three';
 import { HookGamePhase } from '../game-mcp.ts';
-import Piece from './piece/class-piece.ts';
-import MovingPiece from './piece/class-moving-piece.ts';
+import { Piece } from './pieces/pc-piece.ts';
+import { MovingPiece } from './pieces/pc-moving-piece.ts';
 
 /// TYPE DECLARATIONS /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
