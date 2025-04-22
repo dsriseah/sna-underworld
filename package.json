@@ -4,10 +4,9 @@
   "description": "New JAMshire 2024 Game Jam Submission",
   "type": "module",
   "scripts": {
-    "ur:build": "tsx ../_ur/scripts/@build-core.mts",
-    "ur:dev": "tsx ../_ur/scripts/@build-core.mts && tsx ./@build-underworld.mts",
     "dev": "tsx ./@build-underworld.mts",
-    "package:zip": "./zip_dist.sh _public"
+    "package:zip": "./zip_dist.sh _public",
+    "install:datapack": "./get_datapack.sh"
   },
   "author": "dsriseah",
   "license": "MIT",
