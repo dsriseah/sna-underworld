@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/three": "^0.170.0",
-    "ursys": "file:../_ur/_tgz/ursys-0.0.1.tgz",
+    "ursys": "dsriseah/ursys#2025-0422",
     "three": "^0.170.0"
   }
 }
