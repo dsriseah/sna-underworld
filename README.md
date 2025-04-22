@@ -15,9 +15,12 @@ _tested under MacOS terminal_
 cd <your_dev_directory>
 git clone https://github.com/dsriseah/sna-underworld.git
 cd sna-underworld
+
 nvm install
 nvm use
+
 npm ci
+npm run install:datapack
 ```
 
 **Run the Game Server**
