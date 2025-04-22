@@ -3,7 +3,7 @@ submission for New JAMshire 2024
 
 UPDATE: This release uses the public release of [URSYS](https://github.com/dsriseah/ursys/) version 2025-0422, and no longer needs to live inside an URSYS framework to run.
 
-### QUICK START
+## QUICK START
 
 _tested under MacOS terminal_
 
@@ -26,9 +26,9 @@ npm run dev
 ```
 After that, browse to `http://localhost:8080` and explore. Open the Javascript console for debug messages. NOTE: The console is formatted for Chrome-based browsers and may look weird on Firefox or Safari.
 
-### POKING AROUND
+## POKING AROUND
 
-This codebase is written largely in Typescript.
+This codebase is written largely in Typescript, and should run on any unix-like system. I'm using MacOS, but it should work without problems on Linux and Windows WSL if you have the required development tools installed: `git`, `nvm`. 
 
 The source files are in `app-source`. Top-level files are used as entry points for the bundler (esbuild). In this release, there are:
 - `game-boot.ts` - The client-side app which imports modules in the `client` subdirectory. 
