@@ -1,7 +1,7 @@
 # sna-underworld
 submission for New JAMshire 2024
 
-This release uses the public tagged release of [URSYS](https://github.com/dsriseah/ursys/). 
+UPDATE: This release uses the public release of [URSYS](https://github.com/dsriseah/ursys/) version 2025-0422, and no longer needs to live inside an URSYS framework to run.
 
 ### QUICK START
 
